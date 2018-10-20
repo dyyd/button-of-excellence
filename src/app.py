@@ -1,23 +1,13 @@
 from flask import Flask
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:////localhost:'
-# db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://button@localhost/button'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-
-# class User(db.Model):
-#   id = db.Column(db.Integer, primary_key=True)
-#   username = db.Column(db.String(80), unique=True, nullable=False)
-
-#   def __repr__(self):
-#     return '<User %d %r>' % self.id, self.username
-
-# class ButtonPressLog(db.Model):
-#   id = db.Column(db.Integer, primary_key=True)
-#   time = db.Column(db.DateTime, nullable=False)
-#   user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
-#         nullable=False)
+from user import User
+from button_log import ButtonPressLog
 
 @app.route('/')
 def home():
