@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Button of Excellence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+      .container {
+        max-width: 1000px;
+      }
+    </style>
+    <script>
+      function newUser() {
+        var xhr = new XMLHttpRequest();
+        console.log("Starting to create new user!")
+        var name = document.getElementById("uname").value;
+        xhr.open('POST', "{{host_url}}/users?name=" + name, true);
+        xhr.send();
+        console.log("New user created. Reloading")
+        location.reload();
+      }
+
+      {% if testing %}
+        function postButtonPress(id) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', "{{host_url}}/button?id=" + id, true);
+          xhr.send();
+        }
+      {% endif %}
+    </script>
+</head>
+<body>
+    <ul id="users">
+    {% for user in users %}
+        <li>
+          <ul id="user">
+            <li>ID: {{user.id}}</li>
+            <li>Name: {{user.username}}</li>
+            {% if testing%}
+              <li>
+                <button onClick=postButtonPress({{user.id}})>
+                  Test me!
+                </button>
+              </li>
+            {% endif %}
+          </ul>
+          <br>
+      </li>
+    {% endfor %}
+    </ul>
+
+    <form name="myform">
+      <p>ENTER USER NAME <input id="uname" type="text" name="username"></p>
+      <button onclick= newUser()>
+        Create new user
+      </button>
+    </form>
+</body>
+</html>
