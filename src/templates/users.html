@@ -23,7 +23,7 @@
       {% if testing %}
         function postButtonPress(id) {
           var xhr = new XMLHttpRequest();
-          xhr.open('POST', "{{host_url}}/button?id=" + id, true);
+          xhr.open('GET', "{{host_url}}/button?id=" + id, true);
           xhr.send();
         }
       {% endif %}
