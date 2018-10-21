@@ -1,5 +1,7 @@
-{% extends "base.html" %}
-{% block scripts %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript">
       function startSession() {
         var xhr = new XMLHttpRequest();
 
@@ -24,17 +26,10 @@
           description: document.getElementById("session-description").value
         }));
       }
-
-      function showForm() {
-         $("#new-session-form-group").toggle();
-      }
-
-{% endblock %}
-
-{% block content %}
-  <button type="button" class="btn btn-primary btn-lg" onclick="showForm()" style="position:absolute; top: 6rem;">Start new session</button>
-  <div class="container">
-    <div class="row hidden" id="new-session-form-group";>
+    </script>
+  </head>
+  <body>
+    <div class="row">
       <form>
         <select id="group-select">
           {% for group in groups %}
@@ -52,21 +47,5 @@
         Start new session!
       </button>
     </div>
-  </div>
-  <div class="container">
-    <div class="row">
-        {% for session in sessions %}
-          <div class="col-5 card border-primary mb-3">
-            <a class="card-link" href="/sessions/{{session.id}}">
-              <div class="card-header">{{session.description}}</div>
-            </a>
-            <div class="card-body">
-              <p class="card-text">Attendance: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
-              <p class="card-text">Started at: {{session.start_time|datetimefilter}}</p>
-            </div>
-          </div>
-        {% endfor %}
-    </div>
-  </div>
-  <button type="button" class="btn btn-primary btn-lg btn-block"></button>
-{% endblock %}
+  </body>
+</html>

@@ -26,8 +26,13 @@ def datetimefilter(value, format='%Y/%m/%d %H:%M'):
 
 app.jinja_env.filters['datetimefilter'] = datetimefilter
 
+@app.template_filter()
+def unique_length(entries):
+    """Convert a datetime to a different format."""
+    users = [entry.user for entry in entries]
+    return len(set(users))
 
-
+app.jinja_env.filters['unique_length'] = unique_length
 
 
 @app.route('/')
