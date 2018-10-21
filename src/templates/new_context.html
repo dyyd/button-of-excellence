@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Button of Excellence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script type="text/javascript">
+      function newContext() {
+        var xhr = new XMLHttpRequest();
+        console.log("Starting to create new user!")
+        var name = document.getElementById("context-name").value;
+        xhr.open('POST', "{{host_url}}/contexts?name=" + name, true);
+        xhr.send();
+        console.log("New user created. Reloading")
+        location.reload();
+      }
+    </script>
+</head>
+<body>
+    <form>
+      <!-- TODO: New context fields and rule selector and rule adders etc -->
+      <p>CONTEXT NAME <input id="context-name" type="text" name="name"></p>
+    </form>
+    <button onclick=newContext()>
+      Create new context!
+    </button>
+</body>
+</html>

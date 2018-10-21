@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Button of Excellence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script>
+      function newGroup() {
+        var xhr = new XMLHttpRequest();
+        var users = [];
+        var selectBox = document.getElementById("users-select")
+        for (x = 0; x < selectBox.length; x++) {
+          if (selectBox[x].selected) {
+            users.push(selectBox[x].value)
+          }
+        }
+        xhr.open('POST', "/groups", true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.send(JSON.stringify({
+          description: document.getElementById("desc").value,
+          users: users
+        }));
+        location.reload();
+      }
+    </script>
+</head>
+<body>
+    <ul id="groups">
+    {% for group in groups %}
+        <li>
+          <ul>
+            <li>ID: {{group.id}}</li>
+            <li>Description: {{group.description}}</li>
+            <li>Users: {{group.users}}</li>
+          </ul>
+          <br>
+      </li>
+    {% endfor %}
+    </ul>
+    <form name="new-group-form">
+      <p>Group description <input id="desc" type="text" name="description"></p>
+      <select multiple="multiple" id="users-select">
+        {% for user in users %}
+          <option value="{{user.id}}">{{user.username}}</option>
+        {% endfor %}
+      </select>
+    </form>
+    <button onclick= newGroup()>
+      Create new group
+    </button>
+</body>
+</html>

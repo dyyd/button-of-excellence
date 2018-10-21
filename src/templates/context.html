@@ -3,25 +3,13 @@
 <head>
     <title>Button of Excellence</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <style>
-      .container {
-        max-width: 1000px;
-      }
-    </style>
 </head>
 <body>
-    <ul id="logs">
-    {% for entry in entries %}
-        <li>
-          <ul>
-            <li>User: {{entry.user.username}}</li>
-            <li>Time: {{entry.time}}</li>
-          </ul>
-          <br>
-      </li>
-    {% endfor %}
-    </ul>
+  <ul>
+    <li>ID: {{context.id}}</li>
+    <li>Name: {{context.name}}</li>
+    <!-- TODO: List all context rules -->
+  </ul>
 </body>
 </html>
