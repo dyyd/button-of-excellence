@@ -140,7 +140,9 @@ def view_session(id):
     if user not in users:
       users.append(user)
   filled_percentage = "%d" % int((len(users)/float(len(session.group.users))) * 100)
-  return render_template('session.html', users=users, id=id, fill=filled_percentage)
+  if session.context.id == 2:
+    users = []
+  return render_template('session.html', users=users, id=id, fill=filled_percentage, description= session.description)
 
 @app.route('/sessions/<id>', methods=['PUT'])
 def end_sessions(id):
