@@ -70,7 +70,7 @@
               <div class="card-header">{{session.description}}</div>
             </a>
             <div class="card-body">
-              <p class="card-text">Attendance: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
+              <p class="card-text">Participation: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
               <p class="card-text">Started at: {{session.start_time|datetimefilter}}</p>
             </div>
           </div>
