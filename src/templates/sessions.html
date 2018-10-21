@@ -32,23 +32,32 @@
 {% endblock %}
 
 {% block content %}
-  <button type="button" class="btn btn-primary btn-lg" onclick="showForm()" style="position:absolute; top: 6rem;">Start new session</button>
+  <button type="button" class="btn btn-primary btn-lg" onclick="showForm()" style="position:absolute; top: 6rem; left: 1rem">New</button>
   <div class="container">
-    <div class="row hidden" id="new-session-form-group";>
+    <div class="row hidden jumbotron" id="new-session-form-group";>
       <form>
-        <select id="group-select">
-          {% for group in groups %}
-          <option value={{group.id}}>{{group.description}}</option>
-          {% endfor %}
-        </select>
-        <select id="context-select">
-          {% for context in contexts %}
-          <option value={{context.id}}>{{context.name}}</option>
-          {% endfor %}
-        </select>
-        <p>Description: <input id="session-description" type="text" name="description"></p>
+        <div class="form-group">
+          <label>Group</label>
+          <select id="group-select" class="form-control">
+            {% for group in groups %}
+            <option value={{group.id}}>{{group.description}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Context</label>
+          <select id="context-select" class="form-control">
+            {% for context in contexts %}
+            <option value={{context.id}}>{{context.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Description</label>
+          <input class="form-control" id="session-description" type="text" name="description">
+        </div>
       </form>
-      <button onclick="startSession()">
+      <button onclick="startSession()" class="btn btn-primary">
         Start new session!
       </button>
     </div>
@@ -56,7 +65,7 @@
   <div class="container">
     <div class="row">
         {% for session in sessions %}
-          <div class="col-5 card border-primary mb-3">
+          <div class="col-5 card mb-3">
             <a class="card-link" href="/sessions/{{session.id}}">
               <div class="card-header">{{session.description}}</div>
             </a>
@@ -68,5 +77,4 @@
         {% endfor %}
     </div>
   </div>
-  <button type="button" class="btn btn-primary btn-lg btn-block"></button>
 {% endblock %}
