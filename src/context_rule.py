@@ -16,6 +16,3 @@ class ContextRule(db.Model):
   context_rule_type = db.Column(db.Enum(ContextRuleTypeEnum))
   context_id = db.Column(db.Integer, db.ForeignKey('context.id'))
   context = db.relationship('Context')
-
-  def __repr__(self):
-    return '<Context %d %r>' % (self.id, self.name) # TODO: List all other values

@@ -30,7 +30,12 @@ def register_button_press():
   user_id = request.args['id']
   user = User.query.filter_by(id=user_id).first()
   sessions = [session for group in user.groups for session in group.sessions if not session.end_time]
-  log_entry = ButtonPressLog(user_id=user_id, context_session=sessions[0])
+  print(sessions)
+  print([group.sessions for group in user.groups])
+  if len(sessions) > 0:
+    log_entry = ButtonPressLog(user_id=user_id, context_session=sessions[0])
+  else:
+    log_entry = ButtonPressLog(user_id=user_id)
   db.session.add(log_entry)
   db.session.commit()
   # TODO: Check that it was stored successfully
@@ -96,9 +101,15 @@ def start_sessions():
   request_json = request.get_json(force=True)
   session = ContextSession(
     context_id=request_json['contextId'],
-    group_id=request_json['groupId']
+    group_id=request_json['groupId'],
+    description = request_json['description']
   )
   db.session.add(session)
+  open_sessions = [session for session in ContextSession.query.filter_by(group_id=request_json['groupId']).all() if not session.end_time]
+  open_sessions.remove(session)
+
+  for session in open_sessions:
+    session.end_time = datetime.datetime.now()
   db.session.commit()
   return "%d" % session.id, 200
 

@@ -25,7 +25,8 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({
           groupId: groupId,
-          contextId: contextId
+          contextId: contextId,
+          description: document.getElementById("session-description").value
         }));
       }
     </script>
@@ -42,6 +43,7 @@
         <option value={{context.id}}>{{context.name}}</option>
         {% endfor %}
       </select>
+      <p>Description: <input id="session-description" type="text" name="description"></p>
     </form>
     <button onclick="startSession()">
       Start new session!
@@ -51,7 +53,7 @@
         <li>
           <ul>
             <li>ID: {{session.id}}</li>
-            <li>Name: <a href="/sessions/{{session.id}}">{{session.context.name}}</a></li>
+            <li>Name: <a href="/sessions/{{session.id}}">{{session.description}}</a></li>
             <li>Group size: {{session.group.users|length}}</li>
             <li>Started at: {{session.start_time}}</li>
             <li>Ended at: {{session.end_time}}</li>
