@@ -32,12 +32,12 @@
 {% endblock %}
 
 {% block content %}
-  <button type="button" class="btn btn-primary btn-lg" onclick="showForm()" style="position:absolute; top: 6rem; left: 1rem">New</button>
+  <button type="button" class="btn btn-primary btn-lg" onclick="showForm()" style="position:absolute; top: 6rem; left: 1rem">Uus</button>
   <div class="container">
     <div class="row hidden jumbotron" id="new-session-form-group";>
       <form>
         <div class="form-group">
-          <label>Group</label>
+          <label>Grupp</label>
           <select id="group-select" class="form-control">
             {% for group in groups %}
             <option value={{group.id}}>{{group.description}}</option>
@@ -45,7 +45,7 @@
           </select>
         </div>
         <div>
-          <label>Context</label>
+          <label>Kontekst</label>
           <select id="context-select" class="form-control">
             {% for context in contexts %}
             <option value={{context.id}}>{{context.name}}</option>
@@ -53,12 +53,12 @@
           </select>
         </div>
         <div>
-          <label>Description</label>
+          <label>Kirjeldus/Küsimus</label>
           <input class="form-control" id="session-description" type="text" name="description">
         </div>
       </form>
       <button onclick="startSession()" class="btn btn-primary">
-        Start new session!
+        Alusta uut sessiooni!
       </button>
     </div>
   </div>
@@ -70,8 +70,8 @@
               <div class="card-header">{{session.description}}</div>
             </a>
             <div class="card-body">
-              <p class="card-text">Participation: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
-              <p class="card-text">Started at: {{session.start_time|datetimefilter}}</p>
+              <p class="card-text">Osalus: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
+              <p class="card-text">Algus: {{session.start_time|datetimefilter}}</p>
             </div>
           </div>
         {% endfor %}

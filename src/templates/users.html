@@ -22,35 +22,43 @@
 {% endblock %}
 
 {% block content %}
-    <ul id="users">
+    <div class="jumbotron">
+      <form name="new-user-form">
+        <div class="form-group">
+          <label>
+            Nimi
+          </label>
+          <input id="uname" type="text" name="username" class="form-control"></p>
+        </div>
+        <div class="form-group">
+          <label>Tüüp</label>
+          <select id="user-type" class="form-control">
+            <option value="1" selected="true">Student</option>
+            <option value="2">Teacher</option>
+          </select>
+        </div>
+      </form>
+      <button onclick= newUser() class="btn btn-primary">
+        Loo uus kasutaja
+      </button>
+    </div>
+    <div class="container">
     {% for user in users %}
-        <li>
-          <ul>
-            {% if testing%}
-            <li>
-              <button onClick=postButtonPress({{user.id}})>
-                Test {{user.username}}!
-              </button>
-            </li>
-            {% else %}
-            <li>ID: {{user.id}}</li>
-            <li>Name: {{user.username}}</li>
-            <li>Type: {{user.type.name}}</li>
-            {% endif %}
-          </ul>
-          <br>
-      </li>
-    {% endfor %}
-    </ul>
 
-    <form name="new-user-form">
-      <p>ENTER USER NAME <input id="uname" type="text" name="username"></p>
-      <select id="user-type">
-        <option value="1" selected="true">Student</option>
-        <option value="2">Teacher</option>
-      </select>
-    </form>
-    <button onclick= newUser()>
-      Create new user
-    </button>
+      <ul class="list-group row">
+        {% if testing%}
+        <li class="list-group-item col-4">
+          <button onClick=postButtonPress({{user.id}})>
+            Test {{user.username}}!
+          </button>
+        </li>
+        {% else %}
+        <li class="list-group-item col-6">ID: {{user.id}}</li>
+        <li class="list-group-item col-6">Nimi: {{user.username}}</li>
+        <li class="list-group-item col-6">Tüüp: {{user.type.name}}</li>
+        {% endif %}
+        <br>
+      </ul>
+    {% endfor %}
+    </div>
 {% endblock %}

@@ -1,7 +1,7 @@
-{% macro nav_link(endpoint, name) %}
+{% macro nav_link(endpoint, name, disabled=False) %}
 {% if request.endpoint.endswith(endpoint) %}
   <li class="nav-item active"><a class="nav-link" href="{{ url_for(endpoint) }}">{{name}}<span class="sr-only">(current)</span></a></li>
 {% else %}
-  <li class="nav-item"><a class="nav-link" href="{{ url_for(endpoint) }}">{{name}}</a></li>
+  <li class="nav-item"><a class="nav-link" {% if not disabled %} href="{{ url_for(endpoint) }}" {% endif %}>{{name}}</a></li>
 {% endif %}
 {% endmacro %}

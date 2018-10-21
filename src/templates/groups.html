@@ -21,27 +21,35 @@
 {% endblock %}
 
 {% block content %}
-    <ul id="groups">
-    {% for group in groups %}
-        <li>
-          <ul>
-            <li>ID: {{group.id}}</li>
-            <li>Description: {{group.description}}</li>
-            <li>Users: {{group.users}}</li>
-          </ul>
-          <br>
-      </li>
-    {% endfor %}
-    </ul>
+  <div class="jumbotron">
+
     <form name="new-group-form">
-      <p>Group description <input id="desc" type="text" name="description"></p>
-      <select multiple="multiple" id="users-select">
-        {% for user in users %}
-          <option value="{{user.id}}">{{user.username}}</option>
-        {% endfor %}
-      </select>
+      <div class="form-group">
+        <label>
+          Grupi kirjeldus/Grupi nimi
+        </label>
+        <input id="desc" type="text" name="description" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Liikmed</label>
+        <select multiple="multiple" id="users-select" class="form-control">
+          {% for user in users %}
+            <option value="{{user.id}}">{{user.username}}</option>
+          {% endfor %}
+        </select>
+      </div>
     </form>
-    <button onclick= newGroup()>
-      Create new group
+    <button onclick= newGroup() class="btn btn-primary">
+      Loo uus grupp
     </button>
+  </div>
+    <div class="container">
+    {% for group in groups %}
+      <ul class="list-group row">
+        <li class="list-group-item col-6">Kirjeldus/Nimi: {{group.description}}</li>
+        <li class="list-group-item col-6">Liikmed: {{group.users|join(', ')}}</li>
+      </ul>
+      <br>
+    {% endfor %}
+    </div>
 {% endblock %}

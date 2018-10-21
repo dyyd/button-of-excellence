@@ -13,4 +13,4 @@ class User(db.Model):
   type = db.Column(db.Enum(UserTypeEnum))
 
   def __repr__(self):
-    return '<User %d %r>' % (self.id, self.username)
+    return self.username
