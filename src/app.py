@@ -50,12 +50,12 @@ def create_user():
 @app.route('/users')
 def list_users():
   users = User.query.all()
-  return render_template('users.html', users=users)
+  return render_template('users.html', users=users, host_url=app.config['HOST'])
 
 @app.route('/users/test')
 def list_users_with_test():
   users = User.query.all()
-  return render_template('users.html', users=users, testing=True)
+  return render_template('users.html', users=users, testing=True, host_url=app.config['HOST'])
 
 @app.route('/contexts')
 def list_contexts():

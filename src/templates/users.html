@@ -10,7 +10,7 @@
         console.log("Starting to create new user!")
         var name = document.getElementById("uname").value;
         var type = document.getElementById("user-type").value;
-        xhr.open('POST', "http://localhost:5000/users?name=" + name + "&type=" + type, true);
+        xhr.open('POST', "{{host_url}}/users?name=" + name + "&type=" + type, true);
         xhr.send();
         console.log("New user created. Reloading")
         location.reload();
