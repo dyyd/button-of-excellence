@@ -51,7 +51,7 @@
         <li>
           <ul>
             <li>ID: {{session.id}}</li>
-            <li>Name: {{session.context.name}}</li>
+            <li>Name: <a href="/sessions/{{session.id}}">{{session.context.name}}</a></li>
             <li>Group size: {{session.group.users|length}}</li>
             <li>Started at: {{session.start_time}}</li>
             <li>Ended at: {{session.end_time}}</li>

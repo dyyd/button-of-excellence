@@ -1,4 +1,5 @@
 import os
+import datetime
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -27,7 +28,9 @@ def home():
 def register_button_press():
   # TODO: User check maybe? Maybe allow users that are not present
   user_id = request.args['id']
-  log_entry = ButtonPressLog(user_id=user_id)
+  user = User.query.filter_by(id=user_id).first()
+  sessions = [session for group in user.groups for session in group.sessions if not session.end_time]
+  log_entry = ButtonPressLog(user_id=user_id, context_session=sessions[0])
   db.session.add(log_entry)
   db.session.commit()
   # TODO: Check that it was stored successfully
@@ -101,13 +104,21 @@ def start_sessions():
 
 @app.route('/sessions/<id>', methods=['GET'])
 def view_session(id):
-  # TODO: Show session info. If not ended show active session info. If ended show overview/statistics
-  return "Under construction!", 404
+  session = ContextSession.query.filter_by(id=id).first()
+  entries = ButtonPressLog.query.filter_by(context_session_id=id).all()
+  users_raw = [entry.user for entry in entries]
+  users = []
+  for user in users_raw:
+    if user not in users:
+      users.append(user)
+  return render_template('session.html', users=users, id=id)
 
 @app.route('/sessions/<id>', methods=['PUT'])
 def end_sessions(id):
-  # TODO: find session and end it
-  return "Under construction!", 404
+  session = ContextSession.query.get(id)
+  session.end_time = datetime.datetime.now()
+  db.session.commit()
+  return "OK", 200
 
 @app.route('/groups', methods=['POST'])
 def create_group():

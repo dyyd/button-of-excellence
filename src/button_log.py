@@ -8,4 +8,4 @@ class ButtonPressLog(db.Model):
         nullable=True)
   user = db.relationship('User')
   context_session_id = db.Column(db.Integer, db.ForeignKey('context_session.id'))
-  context_session = db.relationship('ContextSession')
+  context_session = db.relationship('ContextSession', backref=db.backref('entries', lazy=True))
