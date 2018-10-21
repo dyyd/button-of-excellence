@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Button of Excellence</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script>
+{% extends "base.html" %}
+
+{% block scripts %}
       function newGroup() {
         var xhr = new XMLHttpRequest();
         var users = [];
@@ -22,9 +18,9 @@
         }));
         location.reload();
       }
-    </script>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <ul id="groups">
     {% for group in groups %}
         <li>
@@ -48,5 +44,4 @@
     <button onclick= newGroup()>
       Create new group
     </button>
-</body>
-</html>
+{% endblock %}

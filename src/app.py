@@ -1,6 +1,6 @@
 import os
 import datetime
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -18,10 +18,22 @@ from context_session import ContextSession
 from group import Group
 # from group_user import GroupUser
 
+#Filters for template
+@app.template_filter()
+def datetimefilter(value, format='%Y/%m/%d %H:%M'):
+    """Convert a datetime to a different format."""
+    return value.strftime(format)
+
+app.jinja_env.filters['datetimefilter'] = datetimefilter
+
+
+
+
+
 @app.route('/')
 def home():
-    return render_template('index.html')
-  # TODO: Return index page with log of button presses
+    return redirect("/sessions", code=302)
+    # return render_template('index.html')
 
 
 @app.route('/button', methods=['GET'])
@@ -61,7 +73,7 @@ def list_users():
   return render_template('users.html', users=users, host_url=app.config['HOST'])
 
 @app.route('/users/test')
-def list_users_with_test():
+def test_users():
   users = User.query.all()
   return render_template('users.html', users=users, testing=True, host_url=app.config['HOST'])
 

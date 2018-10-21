@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Button of Excellence</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script type="text/javascript">
+{% extends "base.html" %}
+{% block scripts %}
       function startSession() {
         var xhr = new XMLHttpRequest();
 
@@ -28,10 +23,30 @@
           contextId: contextId,
           description: document.getElementById("session-description").value
         }));
-      }
-    </script>
-</head>
-<body>
+}
+
+{% endblock %}
+
+{% block content %}
+  <a onclick="initNewSession()" class=”add-session” style=”display: inline;”>
+    <i class="fas fa-plus-circle"></i>
+  </a>
+  <div class="row .no-gutters">
+      {% for session in sessions %}
+        <div class="col-md-7 card border-primary mb-3" style="max-width: 20rem;">
+          <a class="card-link" href="/sessions/{{session.id}}">
+            <div class="card-header">{{session.description}}</div>
+          </a>
+          <div class="card-body">
+            <!-- <h4 class="card-title"></h4> -->
+            <p class="card-text">Group size: {{session.group.users|length}}</p>
+            <p class="card-text">Started at: {{session.start_time|datetimefilter}}</p>
+          </div>
+        </div>
+      {% endfor %}
+  </div>
+
+  <div class="row">
     <form>
       <select id="group-select">
         {% for group in groups %}
@@ -48,20 +63,5 @@
     <button onclick="startSession()">
       Start new session!
     </button>
-    <ul id="sessions">
-    {% for session in sessions %}
-        <li>
-          <ul>
-            <li>ID: {{session.id}}</li>
-            <li>Name: <a href="/sessions/{{session.id}}">{{session.description}}</a></li>
-            <li>Group size: {{session.group.users|length}}</li>
-            <li>Started at: {{session.start_time}}</li>
-            <li>Ended at: {{session.end_time}}</li>
-            <li>Context: <a href="/contexts/{{session.context.id}}">{{session.context.name}}</a></li>
-          </ul>
-          <br>
-      </li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
+  </div>
+{% endblock %}

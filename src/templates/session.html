@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Button of Excellence</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script type="text/javascript">
+{% extends "base.html" %}
+
+{% block scripts %}
       function endSession() {
         var xhr = new XMLHttpRequest();
 
@@ -19,9 +14,9 @@
         xhr.open('PUT', '/sessions/{{id}}', true);
         xhr.send();
       }
-    </script>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <button onclick="endSession()">
       End session
     </button>
@@ -31,5 +26,4 @@
       </li>
     {% endfor %}
     </ol>
-</body>
-</html>
+{% endblock %}
