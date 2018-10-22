@@ -71,7 +71,7 @@
             </a>
             <div class="card-body">
               <p class="card-text">Osalus: {{session.entries|unique_length}} / {{session.group.users|length}}</p>
-              <p class="card-text">Algus: {{session.start_time|datetimefilter}}</p>
+              <p class="card-text">Algus: {{ momentjs(session.start_time).format('llll') }}</p>
             </div>
           </div>
         {% endfor %}

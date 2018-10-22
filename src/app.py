@@ -16,7 +16,9 @@ from context import Context
 from context_rule import ContextRule
 from context_session import ContextSession
 from group import Group
-# from group_user import GroupUser
+from momentjs import momentjs
+
+app.jinja_env.globals['momentjs'] = momentjs
 
 #Filters for template
 @app.template_filter()
@@ -126,7 +128,7 @@ def start_sessions():
   open_sessions.remove(session)
 
   for session in open_sessions:
-    session.end_time = datetime.datetime.now()
+    session.end_time = datetime.datetime.utcnow()
   db.session.commit()
   return "%d" % session.id, 200
 
@@ -139,7 +141,7 @@ def view_session(id):
   for user in users_raw:
     if user not in users:
       users.append(user)
-  filled_percentage = "%d" % int((len(users)/float(len(session.group.users))) * 100)
+  filled_percentage = get_percentage(len(users), len(session.group.users))
   if session.context.id == 2:
     users = []
   return render_template('session.html', users=users, id=id, fill=filled_percentage, description= session.description)
@@ -147,7 +149,7 @@ def view_session(id):
 @app.route('/sessions/<id>', methods=['PUT'])
 def end_sessions(id):
   session = ContextSession.query.get(id)
-  session.end_time = datetime.datetime.now()
+  session.end_time = datetime.datetime.utcnow()
   db.session.commit()
   return "OK", 200
 
@@ -167,6 +169,31 @@ def list_groups():
   groups = Group.query.all()
   users = User.query.all()
   return render_template('groups.html', groups=groups, users=users)
+
+
+def sorter(item):
+  return item[3]
+
+@app.route('/statistics')
+def statistics():
+  groups = Group.query.all()
+  users = []
+  for group in groups:
+    users = users + group.users
+  users = set(users)
+  stats = []
+  for user in users:
+    # find all presses that were with session
+    presses = len(set([press.context_session for press in user.button_presses if press.context_session_id is not None]))
+    sessions = len(set([session for group in user.groups for session in group.sessions]))
+    stats.append((user, presses, sessions, get_percentage(presses, sessions)))
+  stats = sorted(stats, key=sorter, reverse=True)
+  return render_template('statistics.html', groups=groups, stats=stats)
+
+
+def get_percentage(value, total):
+  return "%.2f" % ((value/float(total)) * 100)
+
 
 if __name__ == '__main__':
   app.run()

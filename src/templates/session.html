@@ -30,19 +30,21 @@
 {% endblock %}
 
 {% block content %}
+  <div style="font-size: 300%;">
     <h1 style="text-align: center;">{{description}}</h1>
     <button onclick="endSession()" class="btn btn-danger btn-lg" style="position:absolute; top: 6rem; left: 1rem">
       Lõpeta sessioon
     </button>
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <ul id="session" class="list-group row" style="margin-top: 1rem;">
-        {% for user in users %}
-            <li class="list-group-item col-4">{{user.username}}</li>
-        {% endfor %}
-        </ul>
-        <h1 class="col-3 offset-8" style="position: absolute; text-align: right; top: 20rem; font-size: 12rem; color: #FF851B;">{{fill}}%</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <ul id="session" class="list-group row" style="margin-top: 1rem;">
+          {% for user in users %}
+              <li class="list-group-item col-4">{{user.username}}</li>
+          {% endfor %}
+          </ul>
+          <h1 class="col-3 offset-8" style="position: absolute; text-align: right; top: 20rem; font-size: 12rem; color: #FF851B;">{{fill}}%</h1>
+        </div>
       </div>
     </div>
   </div>

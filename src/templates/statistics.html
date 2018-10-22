@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  $('#myTab a').click(function (e) {
+    e.preventDefault()
+    $(this).tab('show')
+  })
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div>
+    <h1>Osalus sessioonidest</h1>
+  </div>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link ">Grupid</a>
+    </li>
+    {% for group in groups %}
+    <li class="nav-item">
+      <!-- TODO: Add macro here to set active -->
+      <a class="nav-link  {% if loop.index == 1 %} active {% endif %}" data-toggle="tab"  href="#group-{{group.id}}" role="tab">{{group.description}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content">
+    {% for group in groups %}
+    <div class="tab-pane {% if loop.index == 1 %} active {% endif %}" id="group-{{group.id}}" role="tabpanel">
+      <div class="row">
+        <div class="col">
+          <ul class="list-group row">
+            {% for u, attended, total, percent in stats %}
+              {% for user in group.users %}
+                {% if u == user %}
+            <li class="list-group-item col-6">
+              <div class="row">
+                <div class="col">{{user.username}}</div>
+                <div class="col" style="text-align: right; font-size: 125%">{{percent}}%</div>
+              </div>
+            </li>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

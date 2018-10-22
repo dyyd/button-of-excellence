@@ -6,7 +6,7 @@
         <li>
           <ul>
             <li>User: {{entry.user.username}}</li>
-            <li>Time: {{entry.time}}</li>
+            <li>Time: {{ momentjs(entry.time).format('LLLL') }}</li>
           </ul>
           <br>
       </li>
