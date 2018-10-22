@@ -61,8 +61,8 @@ def register_button_press():
 @app.route('/log')
 def view_log():
   # TODO: Add support for requesting specific part of log
-  log_entries = ButtonPressLog.query.all()
-  return render_template('log.html', entries=reversed(log_entries))
+  log_entries = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
+  return render_template('log.html', entries=log_entries)
 
 @app.route('/users', methods=['POST'])
 def create_user():
@@ -107,7 +107,7 @@ def create_context():
 
 @app.route('/sessions')
 def list_sessions():
-  sessions = ContextSession.query.all()
+  sessions = ContextSession.query.order_by(ContextSession.start_time.desc()).all()
   contexts = Context.query.all()
   groups = Group.query.all()
   return render_template('sessions.html', sessions=sessions, contexts=contexts, groups=groups)
