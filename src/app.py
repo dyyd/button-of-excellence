@@ -192,7 +192,12 @@ def statistics():
 
 
 def get_percentage(value, total):
-  return "%.2f" % ((value/float(total)) * 100)
+
+  if value == 0 or total == 0:
+    result = 0.0
+  else:
+    result = (value/float(total)) * 100
+  return "%.2f" % result
 
 
 if __name__ == '__main__':
