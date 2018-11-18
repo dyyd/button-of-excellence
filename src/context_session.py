@@ -13,7 +13,7 @@ class ContextSession(db.Model):
   owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   owner = db.relationship('User', backref=db.backref('session', lazy=True))
 
-  def toDict(sefl):
+  def toDict(self):
     data = self.__dict__
     del data['_sa_instance_state']
     data['participation'] = len(set([entry.user for entry in self.entries])) / len(self.group.users)
