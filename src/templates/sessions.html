@@ -35,7 +35,7 @@
               <p className="col-3 session-date">Sessiooni lõpp</p>
             </div>
             {this.state.sessions && this.state.sessions.map((session, i) => (
-              <div id="session-{i}" className="row session-row">
+              <div id="session-{i}" className="row session-row" onclick="location.href=/sessions/{session.id};">
                 <p className="col-5">{session.description}</p>
                 <p className="col-1 osalus">{session.participation * 100.0}%</p>
                 <p className="col-3 session-date">{session.start_time}</p>
