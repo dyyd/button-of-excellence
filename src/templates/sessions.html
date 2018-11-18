@@ -1,12 +1,36 @@
 {% extends "base.html" %}
 {% block react %}
-  // react stuff
-
   var realPython = React.createClass({
-
+    getInitialState () {
+      return {
+        sessions: null
+      };
+    },
+    componentDidMount() {
+      try {
+        const data = (await axios.get('/api/v1/sessions')).data;
+        this.setState({
+          sessions: data.sessions,
+        });
+      } catch (error) {
+        if (error.response) {
+          alert("Request to server failed with code " + error.response.status)
+        } else {
+          alert("Request to server failed! See console logs!")
+          console.log(error)
+        }
+      }
+    },
     render() {
       return (
-        <h1>Hello world</h1>
+        {this.state.sessions && this.state.sessions.map((session, i) => (
+          <div id="session-{i}">
+            <p>Session id: {session.id}</p>
+            <p>Session description: {session.description}</p>
+            <p>Session group id: {session.group_id}</p>
+            <p>Session start time: {session.start_time}</p>
+          </div>
+          ))}
       );
     }
   });
