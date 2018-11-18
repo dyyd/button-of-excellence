@@ -8,7 +8,7 @@ class UserTypeEnum(enum.Enum):
   Student = 1
   Teacher = 2
 
-class User(db.Model):
+class Kasutaja(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80), unique=True, nullable=False)
   type = db.Column(db.Enum(UserTypeEnum))
@@ -20,5 +20,5 @@ class User(db.Model):
     data = {}
     data['id'] = self.id
     data['username'] = self.username
-    data['type'] = self.type
+    data['type'] = self.type.name
     return json.dumps(data)
