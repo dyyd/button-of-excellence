@@ -31,15 +31,18 @@ def home():
 
 @app.route('/log')
 def log_viewer():
-  return render_template('log.html')
+  log_entries = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
+  return render_template('log.html', entries=log_entries)
 
 @app.route('/users')
 def users_list():
-  return render_template('users.html', host_url=app.config['HOST'])
+  users = User.query.all() # TODO: Refactor so users list is retrieved from API
+  return render_template('users.html', users=users, host_url=app.config['HOST'])
 
 @app.route('/users/test')
 def users_testing():
-  return render_template('users_testing.html', host_url=app.config['HOST'])
+  users = User.query.all() # TODO: Refactor so users list is retrieved from API
+  return render_template('users.html', users=users, testing=True, host_url=app.config['HOST'])
 
 @app.route('/sessions')
 def sessions_list():
@@ -67,7 +70,9 @@ def new_session():
 
 @app.route('/groups')
 def groups_list():
-  return render_template('groups.html')
+  groups = Group.query.all()
+  users = User.query.all()
+  return render_template('groups.html', groups=groups, users=users)
 
 # TODO: Move into separate statistics module or sth
 def sorter(item):
