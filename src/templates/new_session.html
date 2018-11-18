@@ -31,8 +31,8 @@
 
 {% block content %}
   <div class="container">
-    <div class="row jumbotron" id="new-session-form-group";>
-      <form>
+    <div class="row create-session-form">
+      <form class="col-12">
         <div class="form-group">
           <label>Grupp</label>
           <select id="group-select" class="form-control">
@@ -41,7 +41,7 @@
             {% endfor %}
           </select>
         </div>
-        <div>
+        <div class="form-group">
           <label>Kontekst</label>
           <select id="context-select" class="form-control">
             {% for context in contexts %}
@@ -49,12 +49,12 @@
             {% endfor %}
           </select>
         </div>
-        <div>
+        <div class="form-group">
           <label>Kirjeldus/Küsimus</label>
           <input class="form-control" id="session-description" type="text" name="description">
         </div>
       </form>
-      <button onclick="startSession()" class="btn btn-primary">
+      <button onclick="startSession()" class="btn btn-primary" style="margin: 2rem auto; width: 25rem; height: 5rem; font-weight: bold; font-size: 200%;">
         Alusta uut sessiooni!
       </button>
     </div>
