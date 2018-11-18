@@ -15,8 +15,8 @@ class ContextSession(db.Model):
 
   def toDict(self):
     data = self.__dict__
-    if row_dict['_sa_instance_state']:
-      del row_dict['_sa_instance_state']
+    if data['_sa_instance_state']:
+      del data['_sa_instance_state']
     total_users = len(self.group.users)
     participation = 0
     if (total_users > 0):
