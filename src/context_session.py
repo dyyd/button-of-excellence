@@ -22,4 +22,5 @@ class ContextSession(db.Model):
     if (total_users > 0):
       participation = len(set([entry.user for entry in self.entries])) / total_users
     data['participation'] = participation
+    data['group_name'] = self.group.description
     return data

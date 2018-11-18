@@ -27,19 +27,21 @@
     render() {
       return (
         <div  className="row">
-          <div className="col-8 session-list">
+          <div className="col-10 session-list">
             <div className="row session-header">
-              <p className="col-5">Kirjeldus/Küsimus</p>
+              <p className="col-4">Kirjeldus/Küsimus</p>
+              <p className="col-3">Grupp</p>
               <p className="col-1">Osalus %</p>
-              <p className="col-3 session-date">Sessiooni algus</p>
-              <p className="col-3 session-date">Sessiooni lõpp</p>
+              <p className="col-2 session-date">Sessiooni algus</p>
+              <p className="col-2 session-date">Sessiooni lõpp</p>
             </div>
             {this.state.sessions && this.state.sessions.map((session, i) => (
               <a id="session-{{i}}" className="row session-row" href={"/sessions/" + session.id}>
-                <p className="col-5">{session.description}</p>
+                <p className="col-4">{session.description}</p>
+                <p className="col-3">{session.group_name}</p>
                 <p className="col-1 osalus">{session.participation * 100.0}%</p>
-                <p className="col-3 session-date">{session.start_time}</p>
-                <p className="col-3 session-date">{session.end_time}</p>
+                <p className="col-2 session-date">{session.start_time}</p>
+                <p className="col-2 session-date">{session.end_time}</p>
               </a>
             ))}
           </div>
