@@ -41,4 +41,4 @@ TODO:
 * Sessioonide muutmise võimekus
 * Sessioonide kustutamise võimekus
 * Koodi refaktoreerimine
-*
+* https://flask-restful.readthedocs.io/en/0.3.5/

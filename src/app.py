@@ -49,7 +49,7 @@ def sessions_list():
 def new_session():
   groups = Group.query.all()
   contexts = Context.query.all()
-  return render_template('new_session', groups=groups, contexts=contexts)
+  return render_template('new_session.html', groups=groups, contexts=contexts)
 
 @app.route('/groups')
 def groups_list():
