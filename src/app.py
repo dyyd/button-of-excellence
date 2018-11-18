@@ -5,8 +5,8 @@ from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost:5432/button' # TODO: Proper conf file would be nice!   # os.environ['DATABASE_URL']
-# app.config['HOST'] = 'localhost:5000' # TODO: Proper conf file would be nice!  # os.environ['HOST']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL'] # 'postgresql://localhost:5432/button' # TODO: Proper conf file would be nice!   # os.environ['DATABASE_URL']
+app.config['HOST'] = os.environ['HOST'] # 'localhost:5000' # TODO: Proper conf file would be nice!  # os.environ['HOST']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # TODO: Look into it: https://stackoverflow.com/questions/33738467/how-do-i-know-if-i-can-disable-sqlalchemy-track-modifications
 db = SQLAlchemy(app)
 
