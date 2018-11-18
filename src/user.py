@@ -1,5 +1,4 @@
 import enum
-import json
 from app import db
 
 
@@ -16,9 +15,9 @@ class User(db.Model):
   def __repr__(self):
     return self.username
 
-  def toJson(self):
+  def toDict(self):
     data = {}
     data['id'] = self.id
-    data['username'] = self.username
-    data['type'] = self.type.name
-    return json.dumps(data)
+    data["username"] = self.username
+    data["type"] = self.type.name
+    return data
