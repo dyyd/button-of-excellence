@@ -14,7 +14,7 @@ class ContextSession(db.Model):
   owner = db.relationship('User', backref=db.backref('session', lazy=True))
 
   def toDict(self):
-    data = self.__dict__
+    data = dict(self.__dict__)
     print(data)
     if data['_sa_instance_state']:
       del data['_sa_instance_state']
