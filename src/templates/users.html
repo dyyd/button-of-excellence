@@ -15,7 +15,7 @@
       {% if testing %}
         function postButtonPress(id) {
           var xhr = new XMLHttpRequest();
-          xhr.open('GET', "/api/v1/button?id=" + id, true);
+          xhr.open('POST', "/api/v1/button?id=" + id, true);
           xhr.send();
         }
       {% endif %}
