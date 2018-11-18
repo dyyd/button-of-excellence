@@ -45,6 +45,20 @@ def users_testing():
 def sessions_list():
   return render_template('sessions.html')
 
+@app.route('/sessions/<id>', methods=['GET'])
+def view_session(id):
+  session = ContextSession.query.filter_by(id=id).first()
+  entries = ButtonPressLog.query.filter_by(context_session_id=id).all()
+  users_raw = [entry.user for entry in entries]
+  users = []
+  for user in users_raw:
+    if user not in users:
+      users.append(user)
+  filled_percentage = get_percentage(len(users), len(session.group.users))
+  if session.context.id == 2:
+    users = []
+  return render_template('session.html', users=users, id=id, fill=filled_percentage, description= session.description)
+
 @app.route('/sessions/new')
 def new_session():
   groups = Group.query.all()
