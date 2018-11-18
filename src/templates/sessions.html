@@ -8,7 +8,7 @@
     },
     componentDidMount() {
       try {
-        const data = (axios.get('/api/v1/sessions')).data;
+        const data = (await axios.get('/api/v1/sessions')).data;
         this.setState({
           sessions: data.sessions,
         });
