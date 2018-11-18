@@ -1,0 +1,22 @@
+{
+  "name": "button-of-excellence",
+  "homepage": "https://github.com/dyyd/button-of-excellence",
+  "authors": [
+    "dravestus <dyyd.tk@gmail.com>"
+  ],
+  "description": "",
+  "main": "src/app.py",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "react": "^15.1.0"
+  }
+}

@@ -39,8 +39,15 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script src="{{ url_for('static', filename='bower_components/react/react.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/react/react-dom.min.js') }}"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
     <script type="text/javascript">
       {% block scripts %}
+      {% endblock %}
+    </script>
+    <script type="text/jsx">
+      {% block react %}
       {% endblock %}
     </script>
   </head>
@@ -52,12 +59,13 @@
 
       <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
-          {{ nav_link('list_sessions', 'Sessioonid') }}
-          {{ nav_link('list_contexts', 'Küsimuste kontekstid', True) }}
-          {{ nav_link('list_users', 'Kasutajad') }}
-          {{ nav_link('list_groups', 'Grupid') }}
-          {{ nav_link('test_users', 'Testing', True) }}
-          {{ nav_link('view_log', 'Tegevus logi', True) }}
+          {{ nav_link('new_session', 'Uus sessioon') }}
+          {{ nav_link('sessions_list', 'Sessioonid') }}
+          {{ nav_link('contexts_list', 'Küsimuste kontekstid', True) }}
+          {{ nav_link('users_list', 'Kasutajad') }}
+          {{ nav_link('groups_list', 'Grupid') }}
+          {{ nav_link('users_testing', 'Testing', True) }}
+          {{ nav_link('log_viewer', 'Tegevus logi', True) }}
           {{ nav_link('statistics', 'Statistika') }}
         </ul>
       </div>

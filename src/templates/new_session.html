@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <script type="text/javascript">
+{% extends "base.html" %}
+{% block scripts %}
       function startSession() {
         var xhr = new XMLHttpRequest();
 
@@ -26,26 +24,39 @@
           description: document.getElementById("session-description").value
         }));
       }
-    </script>
-  </head>
-  <body>
-    <div class="row">
+
+{% endblock %}
+
+
+
+{% block content %}
+  <div class="container">
+    <div class="row hidden jumbotron" id="new-session-form-group";>
       <form>
-        <select id="group-select">
-          {% for group in groups %}
-          <option value={{group.id}}>{{group.description}}</option>
-          {% endfor %}
-        </select>
-        <select id="context-select">
-          {% for context in contexts %}
-          <option value={{context.id}}>{{context.name}}</option>
-          {% endfor %}
-        </select>
-        <p>Description: <input id="session-description" type="text" name="description"></p>
+        <div class="form-group">
+          <label>Grupp</label>
+          <select id="group-select" class="form-control">
+            {% for group in groups %}
+            <option value={{group.id}}>{{group.description}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Kontekst</label>
+          <select id="context-select" class="form-control">
+            {% for context in contexts %}
+            <option value={{context.id}}>{{context.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Kirjeldus/Küsimus</label>
+          <input class="form-control" id="session-description" type="text" name="description">
+        </div>
       </form>
-      <button onclick="startSession()">
-        Start new session!
+      <button onclick="startSession()" class="btn btn-primary">
+        Alusta uut sessiooni!
       </button>
     </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

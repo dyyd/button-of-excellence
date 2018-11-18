@@ -1,0 +1,25 @@
+{
+  "name": "button-of-excellence",
+  "version": "1.0.0",
+  "description": "Garage48 EduTech Hackathon project Button of Excellence",
+  "main": "src/app.py",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dyyd/button-of-excellence.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dyyd/button-of-excellence/issues"
+  },
+  "homepage": "https://github.com/dyyd/button-of-excellence#readme",
+  "devDependencies": {
+    "bower": "^1.8.4"
+  }
+}

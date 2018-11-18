@@ -5,8 +5,8 @@ from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-app.config['HOST'] = os.environ['HOST']
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost:5432/button' # TODO: Proper conf file would be nice!   # os.environ['DATABASE_URL']
+# app.config['HOST'] = 'localhost:5000' # TODO: Proper conf file would be nice!  # os.environ['HOST']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # TODO: Look into it: https://stackoverflow.com/questions/33738467/how-do-i-know-if-i-can-disable-sqlalchemy-track-modifications
 db = SQLAlchemy(app)
 
@@ -27,7 +27,7 @@ app.jinja_env.globals['momentjs'] = momentjs
 
 @app.route('/')
 def home():
-    return redirect("/sessions", code=302) # TODO: Redirect to new Session page
+    return redirect("/sessions/new", code=302) # TODO: Redirect to new Session page
 
 @app.route('/log')
 def log_viewer():
@@ -47,10 +47,12 @@ def sessions_list():
 
 @app.route('/sessions/new')
 def new_session():
-  return render_template('new_session')
+  groups = Group.query.all()
+  contexts = Context.query.all()
+  return render_template('new_session', groups=groups, contexts=contexts)
 
 @app.route('/groups')
-def list_groups():
+def groups_list():
   return render_template('groups.html')
 
 # TODO: Move into separate statistics module or sth
@@ -83,7 +85,7 @@ def statistics():
   return render_template('statistics.html', groups=groups, stats=stats)
 
 @app.route('/contexts')
-def list_contexts():
+def contexts_list():
   return render_template('contexts.html')
 
 @app.route('/contexts/<id>')
@@ -142,7 +144,7 @@ def delete_user(id):
 
 ### Sessions ###
 
-@appe.route('/api/v1/sessions', methods=['GET'])
+@app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
   data = {}
   data['sessions'] = ContextSession.query.order_by(ContextSession.start_time.desc()).all()
@@ -183,7 +185,7 @@ def create_session():
   db.session.commit()
   return "%d" % session.id, 200
 
-@app.route('api/v1/sessions/<id>', methods=['PUT'])
+@app.route('/api/v1/sessions/<id>', methods=['PUT'])
 def update_session(id):
   # TODO: Refactor so it allows for modification as well
   session = ContextSession.query.get(id)
@@ -191,7 +193,7 @@ def update_session(id):
   db.session.commit()
   return "OK", 200
 
-@app.route('api/v1/sessions/<id>', methods=['DELETE'])
+@app.route('/api/v1/sessions/<id>', methods=['DELETE'])
 def delete_session(id):
   entry = ContextSession.query.get(id)
   db.session.delete(entry)
