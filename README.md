@@ -23,6 +23,8 @@ TODO:
   # Sessioonide tegemine avab aegajalt vana sessiooni
   # Kasutajate tegemine feilib
   # Gruppide tegemine feilib
+  # "Lõpeta sessioon" nupp peaks olema ainult aktiivsel sessioonil ja muidu peaks seal kas nupp puuduma või olema null "Tagasi"
+  # % paigutus paigast ära
 * Nupu vajutuse päringu tüüp muuta POST-ks
 * Sessioonide leht ümber teha nimekirjaks, et rohkem mahuks lehele (pagineerimine)
 * Gruppide ja kasutajate leht teha vähem ruumimahukaks (loomine väiksemaks ja nimekiri normaalsemaks tabeliks)

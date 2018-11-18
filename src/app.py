@@ -202,7 +202,7 @@ def create_session():
     description = request_json['description']
   )
   db.session.add(session)
-  open_sessions = [session for session in ContextSession.query.filter_by(group_id=request_json['groupId']).all() if not session.end_time]
+  open_sessions = [s for s in ContextSession.query.filter_by(group_id=request_json['groupId']).all() if not session.end_time]
   open_sessions.remove(session)
 
   for session in open_sessions:
