@@ -27,9 +27,9 @@
     render() {
       return (
         <div  className="row">
-          <div className="col-8  session-list">
+          <div className="col-8 session-list">
             {this.state.sessions && this.state.sessions.map((session, i) => (
-              <div id="session-{i}" className="row">
+              <div id="session-{i}" className="row session-row">
                 <p className="col-4">{session.description}</p>
                 <p className="col-4">{session.participation * 100.0}%</p>
                 <p className="col-4">{session.start_time}</p>
