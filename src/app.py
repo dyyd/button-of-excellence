@@ -11,12 +11,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # TODO: Look into it: https
 db = SQLAlchemy(app)
 
 # TODO: Improve this here, shouldn't be loading everything here!
-# from user import User, UserTypeEnum
-# from button_log import ButtonPressLog
-# from context import Context
-# from context_rule import ContextRule
-# from context_session import ContextSession
-# from group import Group
+from user import User, UserTypeEnum
+from button_log import ButtonPressLog
+from context import Context
+from context_rule import ContextRule
+from context_session import ContextSession
+from group import Group
 from momentjs import momentjs
 
 app.jinja_env.globals['momentjs'] = momentjs
