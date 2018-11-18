@@ -8,7 +8,7 @@ class UserTypeEnum(enum.Enum):
   Student = 1
   Teacher = 2
 
-class Kasutaja(db.Model):
+class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(80), unique=True, nullable=False)
   type = db.Column(db.Enum(UserTypeEnum))
