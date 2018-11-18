@@ -1,6 +1,6 @@
 import os
 import datetime
-import json
+#import json
 from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 
@@ -123,8 +123,8 @@ def register_button_press():
 @app.route('/api/v1/users')
 def list_users():
   data = {}
-  data['users'] = [ row._asdict() for row in User.query.all()]
-  return json.dumps(data)
+  data['users'] = [ row.__dict__ for row in User.query.all()]
+  return flask.jsonify(data)
 
 @app.route('/api/v1/users', methods=['POST'])
 def create_user():
@@ -133,7 +133,7 @@ def create_user():
   user = User(username= request.args['name'], type=UserTypeEnum(int(request.args['type'])))
   db.session.add(user)
   db.session.commit()
-  return json.dumps(user)
+  return flask.jsonify(user)
 
 @app.route('/api/v1/users/<id>', methods=['DELETE'])
 def delete_user(id):
@@ -147,15 +147,15 @@ def delete_user(id):
 @app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
   data = {}
-  data['sessions'] = [ row._asdict() for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
-  return json.dumps(data)
+  data['sessions'] = [ row.__dict__ for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
+  return flask.jsonify(data)
 
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
 def get_session(id):
   # TODO: Move db fetching to separate module
   data ={}
-  data['session'] = [ row._asdict() for row in ContextSession.query.filter_by(id=id).first()]
-  data['entries'] = [ row._asdict() for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
+  data['session'] = [ row.__dict__ for row in ContextSession.query.filter_by(id=id).first()]
+  data['entries'] = [ row.__dict__ for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
   users_raw = [entry.user for entry in entries]
   users = []
   for user in users_raw:
@@ -164,8 +164,8 @@ def get_session(id):
   data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
   if session.context.id == 2:
     users = []
-  data['users'] = [ row._asdict() for row in users]
-  return json.dumps(data)
+  data['users'] = [ row.__dict__ for row in users]
+  return flask.jsonify(data)
 
 @app.route('/api/v1/sessions', methods=['POST'])
 def create_session():
@@ -208,8 +208,8 @@ def delete_session(id):
 @app.route('/api/v1/groups', methods=['GET'])
 def list_groups():
   data = {}
-  data['groups'] = [ row._asdict() for row in Group.query.all()]
-  return json.dumps(data)
+  data['groups'] = [ row.__dict__ for row in Group.query.all()]
+  return flask.jsonify(data)
 
 @app.route('/api/v1/groups', methods=['POST'])
 def create_group():
@@ -220,7 +220,7 @@ def create_group():
   [group.users.append(user) for user in users]
   db.session.add(group)
   db.session.commit()
-  return json.dumps(group)
+  return flask.jsonify(group)
 
 @app.route('/api/v1/groups/<id>', methods=['DELETE'])
 def delete_group(id):
@@ -249,9 +249,9 @@ def create_context():
 @app.route('/api/v1/logs')
 def list_log_entries():
   data = {}
-  data['log_entries'] = [ row._asdict() for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
+  data['log_entries'] = [ row.__dict__ for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
   # TODO: Add support for requesting specific part of log
-  return json.dumps(data)
+  return flask.jsonify(data)
 
 if __name__ == '__main__':
   app.run()
