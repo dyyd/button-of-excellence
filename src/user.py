@@ -2,7 +2,7 @@ import enum
 from app import db
 
 
-class UserTypeEnum(enum.EnumMeta):
+class UserTypeEnum(db.Enum):
   #TODO: Rethink this!
   Student = 1
   Teacher = 2
