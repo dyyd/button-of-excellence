@@ -127,7 +127,7 @@ def filtered(row):
 @app.route('/api/v1/users')
 def list_users():
   data = {}
-  data['users'] = [ filtered(row) for row in User.query.all()]
+  data['users'] = [ row.toJson() for row in User.query.all()]
   return jsonify(data)
 
 @app.route('/api/v1/users', methods=['POST'])
@@ -137,7 +137,7 @@ def create_user():
   user = User(username= request.args['name'], type=UserTypeEnum(int(request.args['type'])))
   db.session.add(user)
   db.session.commit()
-  return jsonify(user)
+  return user.toJson()
 
 @app.route('/api/v1/users/<id>', methods=['DELETE'])
 def delete_user(id):
@@ -168,7 +168,7 @@ def get_session(id):
   data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
   if session.context.id == 2:
     users = []
-  data['users'] = [ row.__dict__ for row in users]
+  data['users'] = [ row.toJson() for row in users]
   return jsonify(data)
 
 @app.route('/api/v1/sessions', methods=['POST'])

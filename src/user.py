@@ -1,8 +1,9 @@
 import enum
+import json
 from app import db
 
 
-class UserTypeEnum(db.Enum):
+class UserTypeEnum(enum.Enum):
   #TODO: Rethink this!
   Student = 1
   Teacher = 2
@@ -14,3 +15,10 @@ class User(db.Model):
 
   def __repr__(self):
     return self.username
+
+  def toJson(self):
+    data = {}
+    data['id'] = self.id
+    data['username'] = self.username
+    data['type'] = self.type
+    return json.dumps(data)
