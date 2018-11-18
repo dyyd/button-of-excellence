@@ -123,8 +123,8 @@ def register_button_press():
 @app.route('/api/v1/users')
 def list_users():
   data = {}
-  data['users'] = User.query.all()
-  return json.dumps([ row._asdict() for row in data ])
+  data['users'] = [ row._asdict() for row in User.query.all()]
+  return json.dumps(data)
 
 @app.route('/api/v1/users', methods=['POST'])
 def create_user():
@@ -147,15 +147,15 @@ def delete_user(id):
 @app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
   data = {}
-  data['sessions'] = ContextSession.query.order_by(ContextSession.start_time.desc()).all()
-  return json.dumps([ row._asdict() for row in data ])
+  data['sessions'] = [ row._asdict() for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
+  return json.dumps(data)
 
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
 def get_session(id):
   # TODO: Move db fetching to separate module
   data ={}
-  data['session'] = ContextSession.query.filter_by(id=id).first()
-  data['entries'] = ButtonPressLog.query.filter_by(context_session_id=id).all()
+  data['session'] = [ row._asdict() for row in ContextSession.query.filter_by(id=id).first()]
+  data['entries'] = [ row._asdict() for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
   users_raw = [entry.user for entry in entries]
   users = []
   for user in users_raw:
@@ -164,8 +164,8 @@ def get_session(id):
   data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
   if session.context.id == 2:
     users = []
-  data['users'] = users
-  return json.dumps([ row._asdict() for row in data ])
+  data['users'] = [ row._asdict() for row in users]
+  return json.dumps(data)
 
 @app.route('/api/v1/sessions', methods=['POST'])
 def create_session():
@@ -208,8 +208,8 @@ def delete_session(id):
 @app.route('/api/v1/groups', methods=['GET'])
 def list_groups():
   data = {}
-  data['groups'] = Group.query.all()
-  return json.dumps([ row._asdict() for row in data ])
+  data['groups'] = [ row._asdict() for row in Group.query.all()]
+  return json.dumps(data)
 
 @app.route('/api/v1/groups', methods=['POST'])
 def create_group():
@@ -249,9 +249,9 @@ def create_context():
 @app.route('/api/v1/logs')
 def list_log_entries():
   data = {}
-  data['log_entries'] = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
+  data['log_entries'] = [ row._asdict() for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
   # TODO: Add support for requesting specific part of log
-  return json.dumps([ row._asdict() for row in data ])
+  return json.dumps(data)
 
 if __name__ == '__main__':
   app.run()
