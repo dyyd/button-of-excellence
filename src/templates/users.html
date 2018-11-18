@@ -6,7 +6,7 @@
         console.log("Starting to create new user!")
         var name = document.getElementById("uname").value;
         var type = document.getElementById("user-type").value;
-        xhr.open('POST', "{{host_url}}/users?name=" + name + "&type=" + type, true);
+        xhr.open('POST', "/api/v1/users?name=" + name + "&type=" + type, true);
         xhr.send();
         console.log("New user created. Reloading")
         location.reload();
@@ -15,7 +15,7 @@
       {% if testing %}
         function postButtonPress(id) {
           var xhr = new XMLHttpRequest();
-          xhr.open('GET', "/button?id=" + id, true);
+          xhr.open('GET', "/api/v1/button?id=" + id, true);
           xhr.send();
         }
       {% endif %}
