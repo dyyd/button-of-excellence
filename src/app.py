@@ -205,8 +205,8 @@ def create_session():
   open_sessions = [s for s in ContextSession.query.filter_by(group_id=request_json['groupId']).all() if not session.end_time]
   open_sessions.remove(session)
 
-  for session in open_sessions:
-    session.end_time = datetime.datetime.utcnow()
+  for s in open_sessions:
+    s.end_time = datetime.datetime.utcnow()
   db.session.commit()
   return "%d" % session.id, 200
 
