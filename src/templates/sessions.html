@@ -8,7 +8,7 @@
     },
     componentDidMount() {
       try {
-        const data = (await axios.get('/api/v1/sessions')).data;
+        const data = (axios.get('/api/v1/sessions')).data;
         this.setState({
           sessions: data.sessions,
         });
@@ -23,14 +23,16 @@
     },
     render() {
       return (
-        {this.state.sessions && this.state.sessions.map((session, i) => (
-          <div id="session-{i}">
-            <p>Session id: {session.id}</p>
-            <p>Session description: {session.description}</p>
-            <p>Session group id: {session.group_id}</p>
-            <p>Session start time: {session.start_time}</p>
-          </div>
+        <div>
+          {this.state.sessions && this.state.sessions.map((session, i) => (
+            <div id="session-{i}">
+              <p>Session id: {session.id}</p>
+              <p>Session description: {session.description}</p>
+              <p>Session group id: {session.group_id}</p>
+              <p>Session start time: {session.start_time}</p>
+            </div>
           ))}
+        </div>
       );
     }
   });
