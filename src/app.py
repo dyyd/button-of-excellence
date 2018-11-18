@@ -1,7 +1,7 @@
 import os
 import datetime
 #import json
-from flask import Flask, render_template, request,redirect
+from flask import Flask, render_template, request,redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -124,7 +124,7 @@ def register_button_press():
 def list_users():
   data = {}
   data['users'] = [ row.__dict__ for row in User.query.all()]
-  return flask.jsonify(data)
+  return jsonify(data)
 
 @app.route('/api/v1/users', methods=['POST'])
 def create_user():
@@ -133,7 +133,7 @@ def create_user():
   user = User(username= request.args['name'], type=UserTypeEnum(int(request.args['type'])))
   db.session.add(user)
   db.session.commit()
-  return flask.jsonify(user)
+  return jsonify(user)
 
 @app.route('/api/v1/users/<id>', methods=['DELETE'])
 def delete_user(id):
@@ -148,7 +148,7 @@ def delete_user(id):
 def list_sessions():
   data = {}
   data['sessions'] = [ row.__dict__ for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
-  return flask.jsonify(data)
+  return jsonify(data)
 
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
 def get_session(id):
@@ -165,7 +165,7 @@ def get_session(id):
   if session.context.id == 2:
     users = []
   data['users'] = [ row.__dict__ for row in users]
-  return flask.jsonify(data)
+  return jsonify(data)
 
 @app.route('/api/v1/sessions', methods=['POST'])
 def create_session():
@@ -209,7 +209,7 @@ def delete_session(id):
 def list_groups():
   data = {}
   data['groups'] = [ row.__dict__ for row in Group.query.all()]
-  return flask.jsonify(data)
+  return jsonify(data)
 
 @app.route('/api/v1/groups', methods=['POST'])
 def create_group():
@@ -220,7 +220,7 @@ def create_group():
   [group.users.append(user) for user in users]
   db.session.add(group)
   db.session.commit()
-  return flask.jsonify(group)
+  return jsonify(group)
 
 @app.route('/api/v1/groups/<id>', methods=['DELETE'])
 def delete_group(id):
@@ -251,7 +251,7 @@ def list_log_entries():
   data = {}
   data['log_entries'] = [ row.__dict__ for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
   # TODO: Add support for requesting specific part of log
-  return flask.jsonify(data)
+  return jsonify(data)
 
 if __name__ == '__main__':
   app.run()
