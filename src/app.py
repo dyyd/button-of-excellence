@@ -31,6 +31,7 @@ def home():
 
 @app.route('/log')
 def log_viewer():
+  # TODO: Refactor so users list is retrieved from API
   log_entries = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
   return render_template('log.html', entries=log_entries)
 
@@ -70,6 +71,7 @@ def new_session():
 
 @app.route('/groups')
 def groups_list():
+  # TODO: Refactor so users list is retrieved from API
   groups = Group.query.all()
   users = User.query.all()
   return render_template('groups.html', groups=groups, users=users)
