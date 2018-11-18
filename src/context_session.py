@@ -15,6 +15,7 @@ class ContextSession(db.Model):
 
   def toDict(self):
     data = self.__dict__
+    print(data)
     if data['_sa_instance_state']:
       del data['_sa_instance_state']
     total_users = len(self.group.users)
