@@ -1,5 +1,6 @@
 import os
 import datetime
+import json
 from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 
@@ -20,37 +21,89 @@ from momentjs import momentjs
 
 app.jinja_env.globals['momentjs'] = momentjs
 
-#Filters for template
-@app.template_filter()
-def datetimefilter(value, format='%Y/%m/%d %H:%M'):
-    """Convert a datetime to a different format."""
-    return value.strftime(format)
+############## Routes ##############
 
-app.jinja_env.filters['datetimefilter'] = datetimefilter
-
-@app.template_filter()
-def unique_length(entries):
-    """Convert a datetime to a different format."""
-    users = [entry.user for entry in entries]
-    return len(set(users))
-
-app.jinja_env.filters['unique_length'] = unique_length
-
+####### HTML routes #######
 
 @app.route('/')
 def home():
-    return redirect("/sessions", code=302)
-    # return render_template('index.html')
+    return redirect("/sessions", code=302) # TODO: Redirect to new Session page
 
+@app.route('/log')
+def log_viewer():
+  return render_template('log.html')
 
-@app.route('/button', methods=['GET'])
+@app.route('/users')
+def users_list():
+  return render_template('users.html', host_url=app.config['HOST'])
+
+@app.route('/users/test')
+def users_testing():
+  return render_template('users_testing.html', host_url=app.config['HOST'])
+
+@app.route('/sessions')
+def sessions_list():
+  return render_template('sessions.html')
+
+@app.route('/sessions/new')
+def new_session():
+  return render_template('new_session')
+
+@app.route('/groups')
+def list_groups():
+  return render_template('groups.html')
+
+# TODO: Move into separate statistics module or sth
+def sorter(item):
+  return item[3]
+
+# TODO: Move into separate statistics module or sth
+def get_percentage(value, total):
+  if value == 0 or total == 0:
+    result = 0.0
+  else:
+    result = (value/float(total)) * 100
+  return "%.2f" % result
+
+@app.route('/statistics')
+def statistics():
+  # TODO: Only return html page, split DB lookup into API endpoint (lookup groups and other values necessary for statistics table but don't do stats lookup)
+  groups = Group.query.all()
+  users = []
+  for group in groups:
+    users = users + group.users
+  users = set(users)
+  stats = []
+  for user in users:
+    # find all presses that were with session
+    presses = len(set([press.context_session for press in user.button_presses if press.context_session_id is not None]))
+    sessions = len(set([session for group in user.groups for session in group.sessions]))
+    stats.append((user, presses, sessions, get_percentage(presses, sessions)))
+  stats = sorted(stats, key=sorter, reverse=True)
+  return render_template('statistics.html', groups=groups, stats=stats)
+
+@app.route('/contexts')
+def list_contexts():
+  return render_template('contexts.html')
+
+@app.route('/contexts/<id>')
+def view_context(id):
+  context = Context.query.filter_by(id=id).first()
+  return render_template('context.html', context=context)
+
+@app.route('/contexts/new')
+def new_context():
+  return render_template('new_context.html') # TODO: Pass in possible rules or rule types etc
+
+####### API routes #######
+
+@app.route('/api/v1/button', methods=['POST'])
 def register_button_press():
+  # TODO: Move to separate module?
   # TODO: User check maybe? Maybe allow users that are not present
   user_id = request.args['id']
   user = User.query.filter_by(id=user_id).first()
   sessions = [session for group in user.groups for session in group.sessions if not session.end_time]
-  print(sessions)
-  print([group.sessions for group in user.groups])
   if len(sessions) > 0:
     log_entry = ButtonPressLog(user_id=user_id, context_session=sessions[0])
   else:
@@ -60,62 +113,60 @@ def register_button_press():
   # TODO: Check that it was stored successfully
   return "OK", 200
 
-@app.route('/log')
-def view_log():
-  # TODO: Add support for requesting specific part of log
-  log_entries = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
-  return render_template('log.html', entries=log_entries)
 
-@app.route('/users', methods=['POST'])
+# TODO: /api/v1/users/<id> GET  info  # Not necessary ATM
+# TODO: /api/v1/users/<id> PUT  edit
+
+
+@app.route('/api/v1/users')
+def list_users():
+  data = {}
+  data['users'] = User.query.all()
+  return json.dump(data)
+
+@app.route('/api/v1/users', methods=['POST'])
 def create_user():
+  # TODO: Move to deparate module
   # TODO: check if username in use
   user = User(username= request.args['name'], type=UserTypeEnum(int(request.args['type'])))
   db.session.add(user)
   db.session.commit()
-  return "%d" % user.id, 200
+  return json.dump(user)
 
-@app.route('/users')
-def list_users():
-  users = User.query.all()
-  return render_template('users.html', users=users, host_url=app.config['HOST'])
-
-@app.route('/users/test')
-def test_users():
-  users = User.query.all()
-  return render_template('users.html', users=users, testing=True, host_url=app.config['HOST'])
-
-@app.route('/contexts')
-def list_contexts():
-  contexts = Context.query.all()
-  return render_template('contexts.html', contexts=contexts)
-
-@app.route('/contexts/<id>')
-def view_context(id):
-  context = Context.query.filter_by(id=id).first()
-  print(context)
-  return render_template('context.html', context=context)
-
-@app.route('/contexts/new')
-def new_context():
-  return render_template('new_context.html') # TODO: Pass in possible rules or rule types etc
-
-@app.route('/contexts', methods=['POST'])
-def create_context():
-  # TODO: Get params from request and construct Context with ContextRules
-  context = Context(name= request.args['name'])
-  db.session.add(context)
+@app.route('/api/v1/users/<id>', methods=['DELETE'])
+def delete_user(id):
+  entry = User.query.get(id)
+  db.session.delete(entry)
   db.session.commit()
-  return "%d" % context.id, 200
+  return "OK", 200 # TODO: Error handling when entrey in use or not found
 
-@app.route('/sessions')
+### Sessions ###
+
+@appe.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
-  sessions = ContextSession.query.order_by(ContextSession.start_time.desc()).all()
-  contexts = Context.query.all()
-  groups = Group.query.all()
-  return render_template('sessions.html', sessions=sessions, contexts=contexts, groups=groups)
+  data = {}
+  data['sessions'] = ContextSession.query.order_by(ContextSession.start_time.desc()).all()
+  return json.dump(data)
 
-@app.route('/sessions', methods=['POST'])
-def start_sessions():
+@app.route('/api/v1/sessions/<id>', methods=['GET'])
+def get_session(id):
+  # TODO: Move db fetching to separate module
+  data ={}
+  data['session'] = ContextSession.query.filter_by(id=id).first()
+  data['entries'] = ButtonPressLog.query.filter_by(context_session_id=id).all()
+  users_raw = [entry.user for entry in entries]
+  users = []
+  for user in users_raw:
+    if user not in users:
+      users.append(user)
+  data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
+  if session.context.id == 2:
+    users = []
+  data['users'] = users
+  return json.dump(data)
+
+@app.route('/api/v1/sessions', methods=['POST'])
+def create_session():
   # TODO: Create new session based on context chosen
   request_json = request.get_json(force=True)
   session = ContextSession(
@@ -132,73 +183,73 @@ def start_sessions():
   db.session.commit()
   return "%d" % session.id, 200
 
-@app.route('/sessions/<id>', methods=['GET'])
-def view_session(id):
-  session = ContextSession.query.filter_by(id=id).first()
-  entries = ButtonPressLog.query.filter_by(context_session_id=id).all()
-  users_raw = [entry.user for entry in entries]
-  users = []
-  for user in users_raw:
-    if user not in users:
-      users.append(user)
-  filled_percentage = get_percentage(len(users), len(session.group.users))
-  if session.context.id == 2:
-    users = []
-  return render_template('session.html', users=users, id=id, fill=filled_percentage, description= session.description)
-
-@app.route('/sessions/<id>', methods=['PUT'])
-def end_sessions(id):
+@app.route('api/v1/sessions/<id>', methods=['PUT'])
+def update_session(id):
+  # TODO: Refactor so it allows for modification as well
   session = ContextSession.query.get(id)
   session.end_time = datetime.datetime.utcnow()
   db.session.commit()
   return "OK", 200
 
-@app.route('/groups', methods=['POST'])
+@app.route('api/v1/sessions/<id>', methods=['DELETE'])
+def delete_session(id):
+  entry = ContextSession.query.get(id)
+  db.session.delete(entry)
+  db.session.commit()
+  return "OK", 200 # TODO: Error handling when entrey in use or not found
+
+### Groups ###
+
+# TODO: /api/v1/groups/<id> GET  info
+# TODO: /api/v1/groups/<id> PUT  edit
+
+@app.route('/api/v1/groups', methods=['GET'])
+def list_groups():
+  data = {}
+  data['groups'] = Group.query.all()
+  return json.dump(data)
+
+@app.route('/api/v1/groups', methods=['POST'])
 def create_group():
+  # TODO: Move into separate db module ?
   request_json = request.get_json(force=True)
-  print(request_json)
   group = Group(description = request_json['description'])
   users = User.query.filter(User.id.in_([int(id) for id in request_json['users']])).all()
   [group.users.append(user) for user in users]
   db.session.add(group)
   db.session.commit()
-  return "%d" % group.id, 200
+  return json.dump(group)
 
-@app.route('/groups')
-def list_groups():
-  groups = Group.query.all()
-  users = User.query.all()
-  return render_template('groups.html', groups=groups, users=users)
+@app.route('/api/v1/groups/<id>', methods=['DELETE'])
+def delete_group(id):
+  entry = Group.query.get(id)
+  db.session.delete(entry)
+  db.session.commit
+  return "OK", 200 # TODO: Error handling when entrey in use or not found
 
+### Contexts ###
 
-def sorter(item):
-  return item[3]
+# TODO: /api/v1/contexts GET  list        # Not necessary ATM
+# TODO: /api/v1/contexts/<id> GET  info   # Not necessary ATM
+# TODO: /api/v1/contexts/<id> PUT  edit   # Not necessary ATM
+# TODO: /api/v1/contexts/<id> DELETE      # Not necessary ATM
 
-@app.route('/statistics')
-def statistics():
-  groups = Group.query.all()
-  users = []
-  for group in groups:
-    users = users + group.users
-  users = set(users)
-  stats = []
-  for user in users:
-    # find all presses that were with session
-    presses = len(set([press.context_session for press in user.button_presses if press.context_session_id is not None]))
-    sessions = len(set([session for group in user.groups for session in group.sessions]))
-    stats.append((user, presses, sessions, get_percentage(presses, sessions)))
-  stats = sorted(stats, key=sorter, reverse=True)
-  return render_template('statistics.html', groups=groups, stats=stats)
+@app.route('/api/v1/contexts', methods=['POST'])
+def create_context():
+  # TODO: Get params from request and construct Context with ContextRules
+  context = Context(name= request.args['name'])
+  db.session.add(context)
+  db.session.commit()
+  return "%d" % context.id, 200
 
+### Logs ###
 
-def get_percentage(value, total):
-
-  if value == 0 or total == 0:
-    result = 0.0
-  else:
-    result = (value/float(total)) * 100
-  return "%.2f" % result
-
+@app.route('/api/v1/logs')
+def list_log_entries():
+  data = {}
+  data['log_entries'] = ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()
+  # TODO: Add support for requesting specific part of log
+  return json.dump(data)
 
 if __name__ == '__main__':
   app.run()
