@@ -119,11 +119,15 @@ def register_button_press():
 # TODO: /api/v1/users/<id> GET  info  # Not necessary ATM
 # TODO: /api/v1/users/<id> PUT  edit
 
+def filtered(row):
+  row_dict = row.__dict__
+  del row_dict['_sa_instance_state']
+  return row_dict
 
 @app.route('/api/v1/users')
 def list_users():
   data = {}
-  data['users'] = [ row.__dict__ for row in User.query.all()]
+  data['users'] = [ filtered(row) for row in User.query.all()]
   return jsonify(data)
 
 @app.route('/api/v1/users', methods=['POST'])
@@ -147,15 +151,15 @@ def delete_user(id):
 @app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
   data = {}
-  data['sessions'] = [ row.__dict__ for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
+  data['sessions'] = [ filtered(row) for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
   return jsonify(data)
 
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
 def get_session(id):
   # TODO: Move db fetching to separate module
   data ={}
-  data['session'] = [ row.__dict__ for row in ContextSession.query.filter_by(id=id).first()]
-  data['entries'] = [ row.__dict__ for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
+  data['session'] = [ filtered(row) for row in ContextSession.query.filter_by(id=id).first()]
+  data['entries'] = [ filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
   users_raw = [entry.user for entry in entries]
   users = []
   for user in users_raw:
@@ -208,7 +212,7 @@ def delete_session(id):
 @app.route('/api/v1/groups', methods=['GET'])
 def list_groups():
   data = {}
-  data['groups'] = [ row.__dict__ for row in Group.query.all()]
+  data['groups'] = [ filtered(row) for row in Group.query.all()]
   return jsonify(data)
 
 @app.route('/api/v1/groups', methods=['POST'])
@@ -249,7 +253,7 @@ def create_context():
 @app.route('/api/v1/logs')
 def list_log_entries():
   data = {}
-  data['log_entries'] = [ row.__dict__ for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
+  data['log_entries'] = [ filtered(row) for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]
   # TODO: Add support for requesting specific part of log
   return jsonify(data)
 
