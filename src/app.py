@@ -151,7 +151,7 @@ def delete_user(id):
 @app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
   data = {}
-  data['sessions'] = [ filtered(row) for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
+  data['sessions'] = [ row.toDict for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]
   return jsonify(data)
 
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
