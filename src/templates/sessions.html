@@ -6,9 +6,9 @@
         sessions: null
       };
     },
-    componentDidMount() {
+    componentDidMount: async function() {
       try {
-        const sessions_raw = (axios.get('/api/v1/sessions'));
+        const sessions_raw = await axios.get('/api/v1/sessions');
         console.log(sessions_raw)
         const sessions = sessions_raw.data
         console.log(sessions)
