@@ -2,9 +2,7 @@ import enum
 from app import db
 
 
-class UserTypeEnum(enum.Enum, dict):
-  def __init__(self, fname):
-      dict.__init__(self, fname=fname)
+class UserTypeEnum(enum.EnumMeta):
   #TODO: Rethink this!
   Student = 1
   Teacher = 2
