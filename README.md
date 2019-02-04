@@ -16,6 +16,8 @@ pip3
 
 ## Running the app
 
+Either in 'src/' directory use command 'flask run' or use 'python3 manage.py runserver'
+In root directory the command 'python3 src/manage.py runserver' also works.
 
 ## Ideas
 
@@ -65,6 +67,7 @@ pip3
 * Sessioonide kustutamise võimekus
 * Koodi refaktoreerimine
 * https://flask-restful.readthedocs.io/en/0.3.5/
+* Look into moving to GraphQL https://github.com/graphql-python/flask-graphql  https://graphene-python.org/
 
 
 ## Development env setup

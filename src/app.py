@@ -185,7 +185,7 @@ def create_user():
     user = User(username=request.args['name'], type=UserTypeEnum(int(request.args['type'])))
     db.session.add(user)
     db.session.commit()
-    return user.toDict()
+    return jsonify(user.toDict())
 
 
 @app.route('/api/v1/users/<id>', methods=['DELETE'])
@@ -193,7 +193,7 @@ def delete_user(id):
     entry = User.query.get(id)
     db.session.delete(entry)
     db.session.commit()
-    return "OK", 200  # TODO: Error handling when entrey in use or not found
+    return "OK", 200  # TODO: Error handling when entry in use or not found
 
 ### Sessions ###
 
@@ -207,15 +207,15 @@ def list_sessions():
 @app.route('/api/v1/sessions/<id>', methods=['GET'])
 def get_session(id):
     # TODO: Move db fetching to separate module
-    data = {
-      'session': [filtered(row) for row in ContextSession.query.filter_by(id=id).first()],
-      'entries': [filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
-    }
+    data = {}
+    session = [filtered(row) for row in ContextSession.query.filter_by(id=id).first()][0]
+    entries = [filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
+
     users_raw = [entry.user for entry in entries]
     users = []
     for user in users_raw:
         if user not in users:
-          users.append(user)
+            users.append(user)
     data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
     if session.context.id == 2:
         users = []
@@ -256,7 +256,7 @@ def delete_session(id):
     entry = ContextSession.query.get(id)
     db.session.delete(entry)
     db.session.commit()
-    return "OK", 200 # TODO: Error handling when entrey in use or not found
+    return "OK", 200 # TODO: Error handling when entry in use or not found
 
 ### Groups ###
 
@@ -266,7 +266,8 @@ def delete_session(id):
 
 @app.route('/api/v1/groups', methods=['GET'])
 def list_groups():
-    data = {'groups': [filtered(row) for row in Group.query.all()]}
+    #data = {'groups': [filtered(row) for row in Group.query.all()]}
+    data = {'groups': [row.toDict() for row in Group.query.all()]}
     return jsonify(data)
 
 
@@ -279,7 +280,7 @@ def create_group():
     [group.users.append(user) for user in users]
     db.session.add(group)
     db.session.commit()
-    return jsonify(group)
+    return jsonify(group.toDict())
 
 
 @app.route('/api/v1/groups/<id>', methods=['DELETE'])

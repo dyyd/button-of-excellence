@@ -2,7 +2,6 @@
 
 {% block scripts %}
       function newGroup() {
-        var xhr = new XMLHttpRequest();
         var users = [];
         var selectBox = document.getElementById("users-select")
         for (x = 0; x < selectBox.length; x++) {
@@ -10,13 +9,17 @@
             users.push(selectBox[x].value)
           }
         }
-        xhr.open('POST', "/groups", true);
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.send(JSON.stringify({
-          description: document.getElementById("desc").value,
-          users: users
-        }));
-        location.reload();
+        fetch("/api/v1/groups", {
+          method: "POST",
+          body: JSON.stringify({
+            description: document.getElementById("desc").value,
+            users: users
+          }),
+          headers: {'Accept': 'application/json'}
+        }).then(response => {
+          console.log(response.text);
+          location.reload();
+        });
       }
 {% endblock %}
 
