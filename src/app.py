@@ -1,6 +1,5 @@
 import os
 import datetime
-#import json
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -82,9 +81,8 @@ def new_session():
 @app.route('/groups')
 def groups_list():
     # TODO: Refactor so users list is retrieved from API
-    groups = Group.query.all()
     users = User.query.all()
-    return render_template('groups.html', groups=groups, users=users)
+    return render_template('groups.html', users=users)
 
 
 # TODO: Move into separate statistics module or sth
@@ -280,6 +278,10 @@ def list_groups():
 def create_group():
     # TODO: Move into separate db module ?
     request_json = request.get_json(force=True)
+    if not request_json['description']:
+        return "Grupi nimi on puudu!", 409
+    if not request_json['users']:
+        return "Grupi liikmeid pole valitud!", 409
     group = Group(description = request_json['description'])
     users = User.query.filter(User.id.in_([int(uuid) for uuid in request_json['users']])).all()
     [group.users.append(user) for user in users]

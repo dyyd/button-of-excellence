@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 {% block scripts %}
       function startSession() {
-        var xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-            var id = xhr.response
-            window.location = "/sessions/" + id;
-          }
-        }
         var e = document.getElementById("group-select");
         var groupId = e.options[e.selectedIndex].value
 
         var e = document.getElementById("context-select");
         var contextId = e.options[e.selectedIndex].value
-
-        xhr.open('POST', '/api/v1/sessions', true);
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-          groupId: groupId,
-          contextId: contextId,
-          description: document.getElementById("session-description").value
-        }));
+        axios.post(
+            "/api/v1/sessions",
+            JSON.stringify({
+              groupId: groupId,
+              contextId: contextId,
+              description: document.getElementById("session-description").value
+            })
+        ).then((resp) => {
+            window.location = "/sessions/" + resp.data;
+        }).catch((err) => {
+            if(err.response.status == 409) {
+              alert("Sessiooni loomine ebaõnnestus!\nVeateade: " + err.response.data);
+            } else {
+              alert("Sessiooni loomine ebaõnnestus!");
+            }
+            console.log(err);
+        });
       }
 
 {% endblock %}

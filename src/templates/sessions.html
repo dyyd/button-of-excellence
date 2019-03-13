@@ -6,28 +6,39 @@
         sessions: null
       };
     },
-    componentDidMount: async function() {
+    componentDidMount: function() {
+      this.fetchUpdate();
+      this.timerID = setInterval(
+        this.fetchUpdate.bind(this),
+        1000
+      );
+    },
+    fetchUpdate: async function() {
+      if (this.fetching) return;
       try {
-        const sessions_raw = await axios.get('/api/v1/sessions');
-        console.log(sessions_raw)
+        this.setState({fetching: true});
+        sessions_raw = await axios.get('/api/v1/sessions');
         const sessions = sessions_raw.data
-        console.log(sessions)
         this.setState({
           sessions: sessions.sessions,
         });
       } catch (error) {
         if (error.response) {
-          alert("Request to server failed with code " + error.response.status)
+          console.log("Request to server failed with code " + error.response.status)
         } else {
-          alert("Request to server failed! See console logs!")
-          console.log(error)
+          console.log("Request to server failed!", error)
         }
+      } finally {
+        this.setState({fetching: false});
       }
+    },
+    componentWillUnmount: function() {
+      clearInterval(this.timerID);
     },
     render() {
       return (
         <div  className="row">
-          <div className="col-10 session-list">
+          <div className="col-11 session-list">
             <div className="row session-header">
               <p className="col-4">Kirjeldus/Küsimus</p>
               <p className="col-3">Grupp</p>
@@ -57,6 +68,9 @@
 {% endblock %}
 
 {% block content %}
+  <a href="/sessions/new">
+    <img src="http://icons.iconarchive.com/icons/iconsmind/outline/512/Add-icon.png" id="addBtn"/>
+  </a>
   <div id="sessions">
   </div>
 {% endblock %}

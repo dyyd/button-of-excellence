@@ -39,13 +39,9 @@ In root directory the command 'python3 src/manage.py runserver' also works.
 ## TODO:
 * Bugide parandamine: 
   - Sessioonide tegemine avab aegajalt vana sessiooni (uurida põhjuseid ja parandada)
-  - Gruppide tegemine feilib (uurida põhjuseid ja parandada)
   - % paigutus paigast ära (fikseeritud paigutusele minna mis ei oleneks akna suurusest (või oskaks kompenseerida))
 * 
 * Sessioonide/kasutajate/gruppide lehele lisada pagineerimine
-* Gruppide ja kasutajate leht teha vähem ruumimahukaks (loomine väiksemaks ja nimekiri normaalsemaks tabeliks).
-* Liigutada uue grupi/kasutaja/sessiooni loomine varjatud elementi mida kuvatakse nupu vajutusel. Modal vms mis avaneks 
-  ülejäänud lehe peale. Ilma tugeva raamita aga kataks terve lehe, koos nö avanemis animatsiooniga.
 * Sessiooni kestvuse näidik.
 * Kuvada sessiooni infot tabelis onClick tulemina mitte eraldi lehel ("unhide" stiilis tabeli alaminfo). Lõppenud 
   sessiooni korral näidata infot, pooleli oleva korral avada sessiooni leht.
