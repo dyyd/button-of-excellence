@@ -67,6 +67,8 @@
         background-color: #dcdcdc;
         border-bottom-style: solid;
         border-color: black;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
         font-weight: bold;
       }
 
@@ -78,13 +80,93 @@
         text-align: right;
       }
 
+      .session-row {
+        min-height: 3rem;
+      }
+
+      .test-btn {
+        height: 2rem;
+      }
+
       .session-row:nth-of-type(odd) {
         background-color: #dcdcdc;
+      }
+      .session-row:last-child {
+        border-bottom-left-radius: 0.4rem;
+        border-bottom-right-radius: 0.4rem;
       }
       .create-session-form {
         margin-top: 2rem;
       }
+
+      /* The switch - the box around the slider */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+
+      /* Hide default HTML checkbox */
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      /* The slider */
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 34px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #2196F3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      .list-table {
+
+      }
+
+      #addBtn {
+        width: 3rem;
+        float: right;
+        margin-right: 3rem;
+        margin-top: 1rem;
+      }
     </style>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://momentjs.com/downloads/moment-with-locales.js"></script>
     <script src="{{ url_for('static', filename='bower_components/react/react.min.js') }}"></script>
@@ -110,10 +192,9 @@
         <ul class="navbar-nav mr-auto">
           {{ nav_link('new_session', 'Uus sessioon') }}
           {{ nav_link('sessions_list', 'Sessioonid') }}
-          {{ nav_link('contexts_list', 'Küsimuste kontekstid', True) }}
+          <!--{{ nav_link('contexts_list', 'Küsimuste kontekstid', True) }}-->
           {{ nav_link('users_list', 'Kasutajad') }}
           {{ nav_link('groups_list', 'Grupid') }}
-          {{ nav_link('users_testing', 'Testing') }}
           {{ nav_link('log_viewer', 'Tegevus logi', True) }}
           {{ nav_link('statistics', 'Statistika') }}
         </ul>

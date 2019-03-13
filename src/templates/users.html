@@ -1,66 +1,177 @@
 {% extends "base.html" %}
+{% block react %}
+  var realPython = React.createClass({
+    getInitialState () {
+      return {
+        users: null,
+        testing: false,
+        fetching: false
+      };
+    },
+    componentDidMount: function() {
+      this.fetchUpdate();
+      this.timerID = setInterval(
+        this.fetchUpdate.bind(this),
+        1000
+      );
+    },
+    fetchUpdate: async function() {
+      if (this.fetching) return;
+      try {
+        this.setState({fetching: true});
+        response = await axios.get('/api/v1/users');
+        const users = response.data
+        this.setState({
+          users: users.users,
+        });
+      } catch (error) {
+        if (error.response) {
+          console.log("Request to server failed with code " + error.response.status)
+        } else {
+          console.log("Request to server failed!", error)
+        }
+      } finally {
+        this.setState({fetching: false});
+      }
+    },
+    componentWillUnmount: function() {
+      clearInterval(this.timerID);
+    },
+    switchTestMode: function (event) {
+        console.log("Setting test flag");
+        this.setState({testing: !this.state.testing});
+    },
+    performTest: function (id) {
+        axios.post('/api/v1/button?id=' + id).then((resp) => {
+            console.log("Test performed successfully!", resp);
+        }).catch((err) => {
+            console.log("Error happened during performing test!", err);
+        });
+    },
+    performDelete: function (id, name) {
+        if (confirm("Kas oled kindel, et tahad kustutada kasutajat \"" + name + "\"?")) {
+          axios.delete('/api/v1/users/' + id).then((resp) => {
+              console.log("User deleted!", resp);
+          }).catch((err) => {
+              console.log("Error happened!", err);
+          });
+        }
+    },
+    render() {
+      return (
+        <div  className="row list-table">
+          <div className="col-10 session-list">
+            <div className="row session-header">
+              <p className="col-1">ID</p>
+              <p className="col-1">
+                <label className="switch">
+                  <input type="checkbox" onChange={this.switchTestMode.bind(this)}/>
+                  <span className="slider"></span>
+                </label>
+              </p>
+              <p className="col-6">Nimi</p>
+              <p className="col-3">Tüüp</p>
+            </div>
+            {this.state.users && this.state.users.map((user, i) => (
+              <div id="user-{{i}}" className="row session-row">
+                <p className="col-1">{user.id}</p>
+                {this.state.testing
+                  ? <p className="col-1">
+                      <button className="btn btn-primary test-btn" onClick={() => this.performTest(user.id)}>
+                        Test
+                      </button>
+                    </p>
+                  : <p className="offset-1"></p>
+                }
+                <p className="col-6">{user.username}</p>
+                <p className="col-2">{user.type}</p>
+                <p className="col-1">
+                  <button className="btn btn-danger test-btn" onClick={() => this.performDelete(user.id, user.username)}>
+                    Kustuta
+                  </button>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  });
+
+  ReactDOM.render(
+    React.createElement(realPython, null),
+    document.getElementById('users-list')
+  );
+{% endblock %}
 
 {% block scripts %}
       function newUser() {
-        console.log("Starting to create new user!")
         var name = document.getElementById("uname").value;
         var type = document.getElementById("user-type").value;
-        fetch("/api/v1/users?name=" + name + "&type=" + type, {
-          method: "POST"
-        }).then(response => {
-          console.log(response.text()); // TODO: Debug logging, remove!
-          console.log("New user created. Reloading"); // TODO: Debug logging, remove!
-          location.reload();
-        })
+        axios.post("/api/v1/users?name=" + name + "&type=" + type).then((resp) => {
+            $('#userModal').modal('hide');
+        }).catch((err) => {
+            if(err.response.status == 409) {
+              alert("Kasutaja loomine ebaõnnestus!\nVeateade: " + err.response.data);
+            } else {
+              alert("Kasutaja loomine ebaõnnestus!");
+            }
+            console.log(err);
+        });
       }
 
-      {% if testing %}
-        function postButtonPress(id) {
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', "/api/v1/button?id=" + id, true);
-          xhr.send();
+      function filterKeypress(event) {
+        if (event.keyCode == 13) {
+          event.preventDefault();
+          newUser();
         }
-      {% endif %}
+      }
 {% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
-      <form name="new-user-form">
-        <div class="form-group">
-          <label>
-            Nimi
-          </label>
-          <input id="uname" type="text" name="username" class="form-control"></p>
-        </div>
-        <div class="form-group">
-          <label>Tüüp</label>
-          <select id="user-type" class="form-control">
-            <option value="1" selected="true">Student</option>
-            <option value="2">Teacher</option>
-          </select>
-        </div>
-      </form>
-      <button onclick= newUser() class="btn btn-primary">
-        Loo uus kasutaja
-      </button>
-    </div>
-    <div class="container">
-    {% for user in users %}
+  <img src="http://icons.iconarchive.com/icons/iconsmind/outline/512/Add-icon.png" id="addBtn" data-toggle="modal" data-target="#userModal"/>
 
-      <ul class="list-group row">
-        {% if testing%}
-        <li class="list-group-item col-4">
-          <button onClick=postButtonPress({{user.id}})>
-            Test {{user.username}}!
+  <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Uue kasutaja loomine</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
           </button>
-        </li>
-        {% else %}
-        <li class="list-group-item col-6">ID: {{user.id}}</li>
-        <li class="list-group-item col-6">Nimi: {{user.username}}</li>
-        <li class="list-group-item col-6">Tüüp: {{user.type.name}}</li>
-        {% endif %}
-        <br>
-      </ul>
-    {% endfor %}
+        </div>
+        <div class="modal-body">
+          <form name="new-user-form" onkeypress=filterKeypress(event)>
+            <div class="form-group">
+              <label>
+                Nimi
+              </label>
+              <input id="uname" type="text" name="username" class="form-control" onfocus="this.value=''"></p>
+            </div>
+            <div class="form-group">
+              <label>Tüüp</label>
+              <select id="user-type" class="form-control">
+                <option value="1" selected="true">Student</option>
+                <option value="2">Teacher</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button onclick=newUser() class="btn btn-primary" type="button">
+              Loo uus kasutaja
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <script>
+    $('#userModal').on('shown.bs.modal', function () {
+      $('#uname').focus()
+    })
+  </script>
+
+  <div id="users-list">
+  </div>
 {% endblock %}

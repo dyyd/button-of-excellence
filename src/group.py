@@ -6,15 +6,15 @@ group_user = db.Table('group_users',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
 )
 
+
 class Group(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  description = db.Column(db.String)
-  users = db.relationship('User', secondary =group_user, backref = db.backref('groups'))
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String)
+    users = db.relationship('User', secondary =group_user, backref = db.backref('groups'))
 
-
-  def toDict(self):
-    data = {}
-    data['id'] = self.id
-    data["description"] = self.description
-    data["users"] = [row.toDict() for row in self.users]
-    return data
+    def to_dict(self):
+        return {
+          'id': self.id,
+          "description": self.description,
+          "users": [row.to_dict() for row in self.users]
+        }

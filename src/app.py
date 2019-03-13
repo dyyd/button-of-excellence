@@ -3,6 +3,7 @@ import datetime
 #import json
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 # TODO: Proper conf file would be nice!   # os.environ['DATABASE_URL']
@@ -25,9 +26,9 @@ from momentjs import momentjs
 
 app.jinja_env.globals['momentjs'] = momentjs
 
-############## Routes ##############
+# ############# Routes ##############
 
-####### HTML routes #######
+# ###### HTML routes #######
 
 
 @app.route('/')
@@ -44,14 +45,7 @@ def log_viewer():
 
 @app.route('/users')
 def users_list():
-    users = User.query.all() # TODO: Refactor so users list is retrieved from API
-    return render_template('users.html', users=users, host_url=app.config['HOST'])
-
-
-@app.route('/users/test')
-def users_testing():
-    users = User.query.all() # TODO: Refactor so users list is retrieved from API
-    return render_template('users.html', users=users, testing=True, host_url=app.config['HOST'])
+    return render_template('users.html')
 
 
 @app.route('/sessions')
@@ -59,19 +53,26 @@ def sessions_list():
     return render_template('sessions.html')
 
 
-@app.route('/sessions/<id>', methods=['GET'])
-def view_session(id):
-    session = ContextSession.query.filter_by(id=id).first()
-    entries = ButtonPressLog.query.filter_by(context_session_id=id).all()
+@app.route('/sessions/<uuid>', methods=['GET'])
+def view_session(uuid):
+    session = ContextSession.query.filter_by(id=uuid).first()
+    entries = ButtonPressLog.query.filter_by(context_session_id=uuid).all()
     users_raw = [entry.user for entry in entries]
     users = []
     for user in users_raw:
         if user not in users:
-          users.append(user)
+            users.append(user)
     filled_percentage = get_percentage(len(users), len(session.group.users))
     if session.context.id == 2:
         users = []
-    return render_template('session.html', users=users, id=id, fill=filled_percentage, description= session.description)
+    return render_template(
+        'session.html',
+        users=users,
+        id=uuid,
+        fill=filled_percentage,
+        description=session.description,
+        active=session.end_time
+    )
 
 
 @app.route('/sessions/new')
@@ -133,9 +134,9 @@ def contexts_list():
     return render_template('contexts.html')
 
 
-@app.route('/contexts/<id>')
-def view_context(id):
-    context = Context.query.filter_by(id=id).first()
+@app.route('/contexts/<uuid>')
+def view_context(uu):
+    context = Context.query.filter_by(id=uu).first()
     return render_template('context.html', context=context)
 
 
@@ -143,7 +144,8 @@ def view_context(id):
 def new_context():
     return render_template('new_context.html')  # TODO: Pass in possible rules or rule types etc
 
-####### API routes #######
+
+# ####### API routes #######
 
 
 @app.route('/api/v1/button', methods=['POST'])
@@ -163,8 +165,8 @@ def register_button_press():
     return "OK", 200
 
 
-# TODO: /api/v1/users/<id> GET  info  # Not necessary ATM
-# TODO: /api/v1/users/<id> PUT  edit
+# TODO: /api/v1/users/<uuid> GET  info  # Not necessary ATM
+# TODO: /api/v1/users/<uuid> PUT  edit
 
 def filtered(row):
     row_dict = row.__dict__
@@ -174,7 +176,7 @@ def filtered(row):
 
 @app.route('/api/v1/users')
 def list_users():
-    data = {'users': [row.toDict() for row in User.query.all()]}
+    data = {'users': [row.to_dict() for row in User.query.all()]}
     return jsonify(data)
 
 
@@ -182,34 +184,40 @@ def list_users():
 def create_user():
     # TODO: Move to separate module
     # TODO: check if username in use
-    user = User(username=request.args['name'], type=UserTypeEnum(int(request.args['type'])))
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user.toDict())
+    if not request.args['name']:
+        return "Kasutaja nimi on puudu!", 409
+    try:
+        user = User(username=request.args['name'], type=UserTypeEnum(int(request.args['type'])))
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.to_dict())
+    except IntegrityError as e:
+        return "Kasutaja eksisteerib!", 409
 
 
-@app.route('/api/v1/users/<id>', methods=['DELETE'])
-def delete_user(id):
-    entry = User.query.get(id)
+@app.route('/api/v1/users/<uuid>', methods=['DELETE'])
+def delete_user(uuid):
+    entry = User.query.get(uuid)
     db.session.delete(entry)
     db.session.commit()
     return "OK", 200  # TODO: Error handling when entry in use or not found
 
-### Sessions ###
+
+# ### Sessions ###
 
 
 @app.route('/api/v1/sessions', methods=['GET'])
 def list_sessions():
-    data = {'sessions': [row.toDict() for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]}
+    data = {'sessions': [row.to_dict() for row in ContextSession.query.order_by(ContextSession.start_time.desc()).all()]}
     return jsonify(data)
 
 
-@app.route('/api/v1/sessions/<id>', methods=['GET'])
-def get_session(id):
+@app.route('/api/v1/sessions/<uuid>', methods=['GET'])
+def get_session(uuid):
     # TODO: Move db fetching to separate module
     data = {}
-    session = [filtered(row) for row in ContextSession.query.filter_by(id=id).first()][0]
-    entries = [filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=id).all()]
+    session = [filtered(row) for row in ContextSession.query.filter_by(id=uuid).first()][0]
+    entries = [filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=uuid).all()]
 
     users_raw = [entry.user for entry in entries]
     users = []
@@ -219,7 +227,7 @@ def get_session(id):
     data['filled_percentage'] = get_percentage(len(users), len(session.group.users))
     if session.context.id == 2:
         users = []
-    data['users'] = [row.toDict() for row in users]
+    data['users'] = [row.to_dict() for row in users]
     return jsonify(data)
 
 
@@ -242,32 +250,32 @@ def create_session():
     return "%d" % session.id, 200
 
 
-@app.route('/api/v1/sessions/<id>', methods=['PUT'])
-def update_session(id):
+@app.route('/api/v1/sessions/<uuid>', methods=['PUT'])
+def update_session(uuid):
     # TODO: Refactor so it allows for modification as well
-    session = ContextSession.query.get(id)
+    session = ContextSession.query.get(uuid)
     session.end_time = datetime.datetime.utcnow()
     db.session.commit()
     return "OK", 200
 
 
-@app.route('/api/v1/sessions/<id>', methods=['DELETE'])
-def delete_session(id):
-    entry = ContextSession.query.get(id)
+@app.route('/api/v1/sessions/<uuid>', methods=['DELETE'])
+def delete_session(uuid):
+    entry = ContextSession.query.get(uuid)
     db.session.delete(entry)
     db.session.commit()
     return "OK", 200 # TODO: Error handling when entry in use or not found
 
-### Groups ###
 
-# TODO: /api/v1/groups/<id> GET  info
-# TODO: /api/v1/groups/<id> PUT  edit
+# ### Groups ###
+
+# TODO: /api/v1/groups/<uuid> GET  info
+# TODO: /api/v1/groups/<uuid> PUT  edit
 
 
 @app.route('/api/v1/groups', methods=['GET'])
 def list_groups():
-    #data = {'groups': [filtered(row) for row in Group.query.all()]}
-    data = {'groups': [row.toDict() for row in Group.query.all()]}
+    data = {'groups': [row.to_dict() for row in Group.query.all()]}
     return jsonify(data)
 
 
@@ -276,26 +284,27 @@ def create_group():
     # TODO: Move into separate db module ?
     request_json = request.get_json(force=True)
     group = Group(description = request_json['description'])
-    users = User.query.filter(User.id.in_([int(id) for id in request_json['users']])).all()
+    users = User.query.filter(User.id.in_([int(uuid) for uuid in request_json['users']])).all()
     [group.users.append(user) for user in users]
     db.session.add(group)
     db.session.commit()
-    return jsonify(group.toDict())
+    return jsonify(group.to_dict())
 
 
-@app.route('/api/v1/groups/<id>', methods=['DELETE'])
-def delete_group(id):
-    entry = Group.query.get(id)
+@app.route('/api/v1/groups/<uuid>', methods=['DELETE'])
+def delete_group(uuid):
+    entry = Group.query.get(uuid)
     db.session.delete(entry)
     db.session.commit
     return "OK", 200 # TODO: Error handling when entry in use or not found
 
-### Contexts ###
+
+# ### Contexts ###
 
 # TODO: /api/v1/contexts GET  list        # Not necessary ATM
-# TODO: /api/v1/contexts/<id> GET  info   # Not necessary ATM
-# TODO: /api/v1/contexts/<id> PUT  edit   # Not necessary ATM
-# TODO: /api/v1/contexts/<id> DELETE      # Not necessary ATM
+# TODO: /api/v1/contexts/<uuid> GET  info   # Not necessary ATM
+# TODO: /api/v1/contexts/<uuid> PUT  edit   # Not necessary ATM
+# TODO: /api/v1/contexts/<uuid> DELETE      # Not necessary ATM
 
 
 @app.route('/api/v1/contexts', methods=['POST'])
@@ -307,8 +316,7 @@ def create_context():
     return "%d" % context.id, 200
 
 
-
-### Logs ###
+# ### Logs ###
 
 
 @app.route('/api/v1/logs')
@@ -319,4 +327,4 @@ def list_log_entries():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(threaded=True)

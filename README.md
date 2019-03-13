@@ -37,21 +37,20 @@ In root directory the command 'python3 src/manage.py runserver' also works.
 
 
 ## TODO:
-* Testide sait
-* Bugide parandamine
-  - Sessioonide tegemine avab aegajalt vana sessiooni
-  - Kasutajate tegemine feilib
-  - Gruppide tegemine feilib
-  - "Lõpeta sessioon" nupp peaks olema ainult aktiivsel sessioonil ja muidu peaks seal kas nupp puuduma või olema null 
-  "Tagasi"
-  - % paigutus paigast ära
-* Nupu vajutuse päringu tüüp muuta POST-ks
-* Sessioonide leht ümber teha nimekirjaks, et rohkem mahuks lehele (pagineerimine)
-* Gruppide ja kasutajate leht teha vähem ruumimahukaks (loomine väiksemaks ja nimekiri normaalsemaks tabeliks)
-* Sessiooni kestvuse counter
-* Lüüa sessiooni loomine ja ülevaade eraldi lehtedele ja "home" peaks olema Sessiooni alustamine
-* Kuvada sessiooni infot tabelis onClick tulemina mitte eraldi lehel ("unhide" stiilis tabeli alaminfo)
-* Refactor page reloading to only reload when fetching from API results in new values
+* Bugide parandamine: 
+  - Sessioonide tegemine avab aegajalt vana sessiooni (uurida põhjuseid ja parandada)
+  - Gruppide tegemine feilib (uurida põhjuseid ja parandada)
+  - % paigutus paigast ära (fikseeritud paigutusele minna mis ei oleneks akna suurusest (või oskaks kompenseerida))
+* 
+* Sessioonide/kasutajate/gruppide lehele lisada pagineerimine
+* Gruppide ja kasutajate leht teha vähem ruumimahukaks (loomine väiksemaks ja nimekiri normaalsemaks tabeliks).
+* Liigutada uue grupi/kasutaja/sessiooni loomine varjatud elementi mida kuvatakse nupu vajutusel. Modal vms mis avaneks 
+  ülejäänud lehe peale. Ilma tugeva raamita aga kataks terve lehe, koos nö avanemis animatsiooniga.
+* Sessiooni kestvuse näidik.
+* Kuvada sessiooni infot tabelis onClick tulemina mitte eraldi lehel ("unhide" stiilis tabeli alaminfo). Lõppenud 
+  sessiooni korral näidata infot, pooleli oleva korral avada sessiooni leht.
+* Refaktoreerida lehed mis kasutavad lehe taaslaadimist, et värskendada infot. Asendada ka API põhise info päringuga ja 
+  värskendada uuema info puhul või asendada lehe alam osa taaslaadimisega pärides HTML sektsiooni värskendust serverilt.
 * Statistika lehel näidata ajajoont õpilase aktiivsusest (Stiilis nimekirjas onClick avab ajajoone kus info peal. Või 
   siis üks suurem statisika tabel kus on võimalik aktiveerida õpilasi ja küsimuste liike ja küsimusi ja konditsioone jne)
 * Tunnis kohaoleku kontrolli lisamine mille põhjal statistika saaks paremini hinnata kohal oldud osalust.  (Võib-olla 
@@ -60,7 +59,6 @@ In root directory the command 'python3 src/manage.py runserver' also works.
 * Sisse logimine kasutajana
 * Küsimuste kontekstid (mitu küsimust sessiooni kohta)
 * Kasutajate muutmise võimekus
-* Kasutajate kustutamise võimekus
 * Gruppide muutmise võimekus
 * Gruppide kustutamise võimekus
 * Sessioonide muutmise võimekus

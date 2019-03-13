@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block scripts %}
+    {% if not active %}
       function endSession() {
         var xhr = new XMLHttpRequest();
 
@@ -22,19 +23,31 @@
 
       function reload() {
         // TODO: Do this only when new entries arrive?
+        // TODO: Use long polling to get new data from server
         console.log("Waiting for reload")
         setTimeout(doReload, 1500)
       }
 
       window.onload = reload
+    {% endif %}
 {% endblock %}
 
 {% block content %}
   <div style="font-size: 300%;">
     <h1 style="text-align: center;">{{description}}</h1>
-    <button onclick="endSession()" class="btn btn-danger btn-lg" style="position:absolute; top: 16rem; left: 1rem">
-      Lõpeta sessioon
-    </button>
+    {% if not active %}
+        <button onclick="endSession()" class="btn btn-danger btn-lg" style="position:absolute; top: 16rem; left: 1rem">
+          Lõpeta sessioon
+        </button>
+    {% else %}
+        <button
+            onclick="window.location = '/sessions'"
+            class="btn btn-danger btn-lg"
+            style="position:absolute; top: 16rem; left: 1rem"
+        >
+            Tagasi
+        </button>
+    {% endif %}
     <div class="container">
       <div class="row">
         <div class="col">
