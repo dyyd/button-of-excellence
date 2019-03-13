@@ -163,12 +163,6 @@ def register_button_press():
 # TODO: /api/v1/users/<uuid> GET  info  # Not necessary ATM
 # TODO: /api/v1/users/<uuid> PUT  edit
 
-def filtered(row):
-    row_dict = row.__dict__
-    del row_dict['_sa_instance_state']
-    return row_dict
-
-
 @app.route('/api/v1/users')
 def list_users():
     data = {'users': [row.to_dict() for row in User.query.all()]}
@@ -211,8 +205,8 @@ def list_sessions():
 def get_session(uuid):
     # TODO: Move db fetching to separate module
     data = {}
-    session = [filtered(row) for row in ContextSession.query.filter_by(id=uuid).first()][0]
-    entries = [filtered(row) for row in ButtonPressLog.query.filter_by(context_session_id=uuid).all()]
+    session = ContextSession.query.filter_by(id=uuid).first()
+    entries = ButtonPressLog.query.filter_by(context_session_id=uuid).all()
 
     users_raw = [entry.user for entry in entries]
     users = []

@@ -38,15 +38,12 @@ In root directory the command 'python3 src/manage.py runserver' also works.
 
 ## TODO:
 * Bugide parandamine: 
-  - Sessioonide tegemine avab aegajalt vana sessiooni (uurida põhjuseid ja parandada)
   - % paigutus paigast ära (fikseeritud paigutusele minna mis ei oleneks akna suurusest (või oskaks kompenseerida))
 * 
 * Sessioonide/kasutajate/gruppide lehele lisada pagineerimine
 * Sessiooni kestvuse näidik.
 * Kuvada sessiooni infot tabelis onClick tulemina mitte eraldi lehel ("unhide" stiilis tabeli alaminfo). Lõppenud 
   sessiooni korral näidata infot, pooleli oleva korral avada sessiooni leht.
-* Refaktoreerida lehed mis kasutavad lehe taaslaadimist, et värskendada infot. Asendada ka API põhise info päringuga ja 
-  värskendada uuema info puhul või asendada lehe alam osa taaslaadimisega pärides HTML sektsiooni värskendust serverilt.
 * Statistika lehel näidata ajajoont õpilase aktiivsusest (Stiilis nimekirjas onClick avab ajajoone kus info peal. Või 
   siis üks suurem statisika tabel kus on võimalik aktiveerida õpilasi ja küsimuste liike ja küsimusi ja konditsioone jne)
 * Tunnis kohaoleku kontrolli lisamine mille põhjal statistika saaks paremini hinnata kohal oldud osalust.  (Võib-olla 

@@ -3,36 +3,83 @@
 {% block scripts %}
     {% if not active %}
       function endSession() {
-        var xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-            var id = xhr.response
+        axios.put(
+            "/api/v1/sessions/{{id}}"
+        ).then((resp) => {
             window.location = "/sessions";
-          }
-        }
-
-        xhr.open('PUT', '/api/v1/sessions/{{id}}', true);
-        xhr.send();
+        }).catch((err) => {
+            alert("Sessiooni lõpetamine ebaõnnestus!");
+            console.log(err);
+        });
       }
-
-      function doReload() {
-        console.log("Reloading!")
-        window.location.reload()
-      }
-
-      function reload() {
-        // TODO: Do this only when new entries arrive?
-        // TODO: Use long polling to get new data from server
-        console.log("Waiting for reload")
-        setTimeout(doReload, 1500)
-      }
-
-      window.onload = reload
     {% endif %}
 {% endblock %}
 
+{% block react %}
+  var realPython = React.createClass({
+    getInitialState () {
+      return {
+        users: null,
+        fill: "0.00%"
+      };
+    },
+    componentDidMount: function() {
+      this.fetchUpdate();
+      this.timerID = setInterval(
+        this.fetchUpdate.bind(this),
+        1000
+      );
+    },
+    fetchUpdate: async function() {
+      if (this.fetching) return;
+      try {
+        this.setState({fetching: true});
+        resp = await axios.get('/api/v1/sessions/{{id}}');
+        this.setState({
+          users: resp.data.users,
+          fill: resp.data.filled_percentage + "%"
+        })
+      } catch (error) {
+        if (error.response) {
+          console.log("Request to server failed with code " + error.response.status)
+        } else {
+          console.log("Request to server failed!", error)
+        }
+      } finally {
+        this.setState({fetching: false});
+      }
+    },
+    componentWillUnmount: function() {
+      clearInterval(this.timerID);
+    },
+    render() {
+      return (
+        <div className="container">
+          <h1 className="col-3 offset-8 fill-percentage">{this.state.fill}</h1>
+          <div className="row">
+            <div className="col">
+              {this.state.users &&
+                <ul className="list-group row">
+                  {this.state.users.map((user, i) => (
+                    <li className="list-group-item col-4">{user.username}</li>
+                  ))}
+                </ul>
+              }
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+
+  ReactDOM.render(
+    React.createElement(realPython, null),
+    document.getElementById('session')
+  );
+{% endblock %}
+
 {% block content %}
+
   <div style="font-size: 300%;">
     <h1 style="text-align: center;">{{description}}</h1>
     {% if not active %}
@@ -43,22 +90,12 @@
         <button
             onclick="window.location = '/sessions'"
             class="btn btn-danger btn-lg"
-            style="position:absolute; top: 16rem; left: 1rem"
+            style="position:absolute; top: 16rem; left: 1rem;"
         >
             Tagasi
         </button>
     {% endif %}
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <ul id="session" class="list-group row" style="margin-top: 1rem;">
-          {% for user in users %}
-              <li class="list-group-item col-4">{{user.username}}</li>
-          {% endfor %}
-          </ul>
-          <h1 class="col-3 offset-8" style="position: absolute; text-align: right; margin-right: 2rem; top: 16rem; font-size: 10rem; color: #FF851B;">{{fill}}%</h1>
-        </div>
-      </div>
+    <div id="session">
     </div>
   </div>
 {% endblock %}
