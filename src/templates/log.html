@@ -1,15 +1,72 @@
 {% extends "base.html" %}
 
+{% block react %}
+  var realPython = React.createClass({
+    getInitialState () {
+      return {
+        entries: null,
+        fetching: false
+      };
+    },
+    componentDidMount: function() {
+      this.fetchUpdate();
+      this.timerID = setInterval(
+        this.fetchUpdate.bind(this),
+        1000
+      );
+    },
+    fetchUpdate: async function() {
+      if (this.fetching) return;
+      try {
+        this.setState({fetching: true});
+        response = await axios.get('/api/v1/logs');
+        const entries = response.data
+        //  TODO: Maybe validate that entires are in correct order by date?
+        this.setState({
+          entries: entries.log_entries,
+        });
+      } catch (error) {
+        if (error.response) {
+          console.log("Request to server failed with code " + error.response.status)
+        } else {
+          console.log("Request to server failed!", error)
+        }
+      } finally {
+        this.setState({fetching: false});
+      }
+    },
+    componentWillUnmount: function() {
+      clearInterval(this.timerID);
+    },
+    render() {
+      return (
+        <div  className="row list-table">
+          <div className="col-10 session-list">
+            <div className="row session-header">
+              <p className="col-3">Aeg</p>
+              <p className="col-6">Kasutaja</p>
+              <p className="col-3">Tüüp</p>
+            </div>
+            {this.state.entries && this.state.entries.map((entry, i) => (
+              <div id="entry-{{i}}" className="row session-row">
+                <p className="col-3">{moment(entry.time).format('LLLL')}</p>
+                <p className="col-6">{entry.user.username}</p>
+                <p className="col-3">{entry.user.type}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  });
+
+  ReactDOM.render(
+    React.createElement(realPython, null),
+    document.getElementById('log-list')
+  );
+{% endblock %}
+
 {% block content %}
-    <ul id="logs">
-    {% for entry in entries %}
-        <li>
-          <ul>
-            <li>User: {{entry.user.username}}</li>
-            <li>Time: {{ momentjs(entry.time).format('LLLL') }}</li>
-          </ul>
-          <br>
-      </li>
-    {% endfor %}
-    </ul>
+  <div id="log-list">
+  </div>
 {% endblock %}

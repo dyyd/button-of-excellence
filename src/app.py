@@ -22,9 +22,6 @@ from context import Context
 from context_rule import ContextRule
 from context_session import ContextSession
 from group import Group
-from momentjs import momentjs
-
-app.jinja_env.globals['momentjs'] = momentjs
 
 # ############# Routes ##############
 
@@ -321,7 +318,7 @@ def create_context():
 
 @app.route('/api/v1/logs')
 def list_log_entries():
-    data = {'log_entries': [filtered(row) for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]}
+    data = {'log_entries': [row.to_dict() for row in ButtonPressLog.query.order_by(ButtonPressLog.time.desc()).all()]}
     # TODO: Add support for requesting specific part of log
     return jsonify(data)
 
