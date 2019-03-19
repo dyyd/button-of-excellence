@@ -49,7 +49,7 @@
             </div>
             {this.state.entries && this.state.entries.map((entry, i) => (
               <div id="entry-{{i}}" className="row session-row">
-                <p className="col-3">{moment(entry.time).format('LLLL')}</p>
+                <p className="col-3">{moment.utc(entry.time).local().lang("et").format('LLLL')}</p>
                 <p className="col-6">{entry.user.username}</p>
                 <p className="col-3">{entry.user.type}</p>
               </div>

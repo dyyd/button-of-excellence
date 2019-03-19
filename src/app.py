@@ -6,9 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 # TODO: Proper conf file would be nice!   # os.environ['DATABASE_URL']
-app.config['SQLALCHEMY_DATABASE_URI'] =  os.environ['DATABASE_URL']
-# TODO: Proper conf file would be nice!  # os.environ['HOST']
-app.config['HOST'] = os.environ['HOST']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL'] # 'postgresql://localhost:5432/button' 
 # TODO: Look into it:
 #  https://stackoverflow.com/questions/33738467/how-do-i-know-if-i-can-disable-sqlalchemy-track-modifications
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
